@@ -1,35 +1,52 @@
 # GeoMCP 开发计划
 
-本目录保存 GeoMCP 的分步开发计划。
+本目录保存 GeoMCP 的分步开发计划。每一步独立成文档，建议严格按编号推进。
 
-开发顺序：
+## 开发顺序
 
-1. Project Core
-2. Permission / Path Sandbox
-3. Python API
-4. CLI
-5. MCP
-6. Job Manager
-7. CPU Executor
-8. GPU Executor
-9. GPU Worker
-10. DAS Basic
-11. RAG
-12. Research Memory
-13. DAS Advanced
-14. Catalog / HypoDD / NLLoc / MatchLocate
-15. 集成验收与发布
+1. [Project Core](01_Project_Core.md)
+2. [Permission / Path Sandbox](02_Permission_Path_Sandbox.md)
+3. [Python API](03_Python_API.md)
+4. [CLI](04_CLI.md)
+5. [MCP](05_MCP.md)
+6. [Job Manager](06_Job_Manager.md)
+7. [CPU Executor](07_CPU_Executor.md)
+8. [GPU Executor](08_GPU_Executor.md)
+9. [GPU Worker](09_GPU_Worker.md)
+10. [DAS Basic](10_DAS_Basic.md)
+11. [RAG](11_RAG.md)
+12. [Research Memory](12_Research_Memory.md)
+13. [DAS Advanced](13_DAS_Advanced.md)
+14. [Catalog / HypoDD / NLLoc / MatchLocate](14_Seismology_Wrappers.md)
+15. [集成验收与发布](15_Integration_Release.md)
 
-核心架构边界：
+## 版本对应
 
-- 1012 = Control Plane
-- 1015 = GPU Compute Plane
-- MCP、CLI、Python API 共享同一套 Service / Scientific Core
-- 所有路径必须经过 Permission / Path Sandbox
-- 原始科研数据默认只读
-- Agent 不暴露 delete、任意 Shell、任意 SSH
-- 长任务统一进入 Job Manager
-- GPU 任务只能通过固定 Worker Registry 执行
-- Reference Knowledge 与 Research Memory 分离
+```text
+v0.1 = Step 01–10
+v0.2 = Step 11
+v0.3 = Step 12–13
+v0.4 = Step 14
+Release Gate = Step 15
+```
 
-按编号依次开发，不建议跳过基础设施阶段直接堆积科研算法。
+## 总体原则
+
+```text
+Codex负责思考
+Skills负责指导
+MCP负责Agent接口
+CLI负责人工接口
+Python API负责程序接口
+Scientific Core负责算法
+Job Manager负责任务生命周期
+Executor负责计算节点选择
+Worker负责真正执行
+1012负责控制
+1015负责GPU计算
+RAG负责外部知识
+Research Memory负责内部经验
+Permission负责安全边界
+```
+
+不要先开发大量科研算法，再补权限、接口和任务系统。
