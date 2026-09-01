@@ -1,5 +1,10 @@
 default_policy: deny
 raw_data_write: false
+allowed_capabilities:
+  - system.status
+  - filesystem.inspect
+  - filesystem.read
+  - filesystem.write
 denied_capabilities:
   - delete
   - recursive_delete

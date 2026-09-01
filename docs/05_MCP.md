@@ -9,9 +9,11 @@
 ```text
 Codex
 ↓
-MCP Tool
+MCP Tool Registry
 ↓
-Service
+MCP Server Adapter
+↓
+Python API / Service
 ↓
 Scientific Core
 ```
@@ -39,6 +41,8 @@ output schema
 handler
 ```
 
+`src/geomcp/mcp/registry.py` 是工具清单的唯一来源。Server 启动时遍历 Registry 注册工具，不允许在 `server.py` 再维护一份独立工具列表。
+
 MCP 输入不能包含：
 
 - 任意 shell command
@@ -57,4 +61,11 @@ MCP 输入不能包含：
 
 ## 验收
 
-Codex 能发现并调用基础 MCP 工具，非法路径由服务器端权限系统拒绝。
+测试必须覆盖：
+
+1. Registry 只包含预期安全工具。
+2. MCP Server 从 Registry 自动注册。
+3. 使用 MCP SDK Client 建立连接后能够发现工具并调用 `filesystem.inspect`。
+4. 非法路径仍由服务器端 Permission / Path Sandbox 拒绝。
+
+这样后续新增工具只修改 Registry 和对应 API/Service，不需要同步修改 Server 工具列表。

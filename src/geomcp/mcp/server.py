@@ -10,11 +10,10 @@ import argparse
 import os
 from typing import Sequence
 
-from geomcp.api import filesystem as filesystem_api
-from geomcp.api import system as system_api
+from geomcp.mcp.registry import ToolRegistry, build_registry
 
 
-def create_server():
+def create_server(registry: ToolRegistry | None = None):
     try:
         from mcp.server.mcpserver import MCPServer
     except ImportError as exc:  # pragma: no cover - depends on optional package
@@ -28,16 +27,14 @@ def create_server():
         ),
     )
 
-    @server.tool(name="system.status", description="Return GeoMCP status and configuration health.")
-    def system_status(config_dir: str | None = None) -> dict:
-        return system_api.status(config_dir).to_dict()
-
-    @server.tool(
-        name="filesystem.inspect",
-        description="Inspect an allowed server path. Requests outside configured read roots are denied.",
-    )
-    def filesystem_inspect(path: str, config_dir: str | None = None) -> dict:
-        return filesystem_api.inspect(path, config_dir=config_dir).to_dict()
+    active_registry = registry or build_registry()
+    for definition in active_registry.list():
+        server.add_tool(
+            definition.handler,
+            name=definition.name,
+            description=definition.description,
+            structured_output=True,
+        )
 
     return server
 

@@ -61,13 +61,26 @@ def validate_config(config: dict[str, Any]) -> None:
     try:
         read_roots = config["paths"]["read_roots"]
         write_roots = config["paths"]["write_roots"]
-        denied = config["permissions"]["denied_capabilities"]
+        permissions = config["permissions"]
+        denied = permissions["denied_capabilities"]
     except (KeyError, TypeError) as exc:
         raise ConfigurationError(f"Missing required configuration key: {exc}") from exc
+
+    default_policy = permissions.get("default_policy", "deny")
+    allowed = permissions.get("allowed_capabilities", [])
 
     if not isinstance(read_roots, list) or not read_roots:
         raise ConfigurationError("paths.read_roots must be a non-empty list")
     if not isinstance(write_roots, list) or not write_roots:
         raise ConfigurationError("paths.write_roots must be a non-empty list")
+    if default_policy not in {"deny", "allow"}:
+        raise ConfigurationError("permissions.default_policy must be 'deny' or 'allow'")
+    if not isinstance(allowed, list):
+        raise ConfigurationError("permissions.allowed_capabilities must be a list")
     if not isinstance(denied, list):
         raise ConfigurationError("permissions.denied_capabilities must be a list")
+
+    overlap = set(str(item) for item in allowed) & set(str(item) for item in denied)
+    if overlap:
+        names = ", ".join(sorted(overlap))
+        raise ConfigurationError(f"Capabilities cannot be both allowed and denied: {names}")

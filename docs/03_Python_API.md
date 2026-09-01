@@ -26,6 +26,8 @@ src/geomcp/api/
 └── jobs.py
 ```
 
+当前 `jobs.py` 仅保留 Step 06 的公共 API 位置，不提前暴露任何 Job 操作。Job Manager 完成后再在该模块加入稳定接口。
+
 后续再扩展：
 
 ```text

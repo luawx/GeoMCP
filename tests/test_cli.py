@@ -10,7 +10,11 @@ def write_config(config_dir: Path, root: Path):
     files = {
         "geomcp.yaml": "name: GeoMCP\n",
         "paths.yaml": f"read_roots: [{root}]\nwrite_roots: [{out}]\n",
-        "permissions.yaml": "denied_capabilities: [delete]\n",
+        "permissions.yaml": (
+            "default_policy: deny\n"
+            "allowed_capabilities: [filesystem.inspect, filesystem.read, filesystem.write, system.status]\n"
+            "denied_capabilities: [delete]\n"
+        ),
         "executors.yaml": "default_executor: cpu\n",
         "rag.yaml": "enabled: false\n",
     }
