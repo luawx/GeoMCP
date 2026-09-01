@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from geomcp.api import jobs
 from geomcp.api.filesystem import inspect
 from geomcp.api.system import status
 
@@ -10,7 +11,11 @@ def write_config(config_dir: Path, root: Path):
     values = {
         "geomcp.yaml": "name: GeoMCP\ncontrol_node: '1012'\ngpu_node: '1015'\n",
         "paths.yaml": f"read_roots:\n  - {root}\nwrite_roots:\n  - {out}\n",
-        "permissions.yaml": "denied_capabilities: [delete, arbitrary_shell, arbitrary_ssh]\n",
+        "permissions.yaml": (
+            "default_policy: deny\n"
+            "allowed_capabilities: [filesystem.inspect, filesystem.read, filesystem.write, system.status]\n"
+            "denied_capabilities: [delete, arbitrary_shell, arbitrary_ssh]\n"
+        ),
         "executors.yaml": "default_executor: cpu\n",
         "rag.yaml": "enabled: false\n",
     }
@@ -43,3 +48,7 @@ def test_filesystem_api_rejects_outside_path(tmp_path: Path):
     result = inspect(outside, config_dir=config_dir)
     assert result.success is False
     assert result.error_code == "PERMISSIONDENIED"
+
+
+def test_jobs_api_is_reserved_until_step_06():
+    assert jobs.__all__ == []
