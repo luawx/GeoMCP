@@ -81,3 +81,22 @@ arbitrary_ssh
 必须覆盖合法路径、/etc、其他用户目录、../、符号链接越界、原始数据写入、显式 deny 以及未知 capability 等测试。
 
 所有安全判断采用 fail closed。
+
+
+## Workspace / Data Region 二级边界
+
+在全局 PathPolicy 之上增加 WorkspaceManager：
+
+```text
+Agent workspace + relative path
+↓
+Workspace root
+↓
+PathPolicy global roots
+↓
+Scientific Service
+```
+
+Workspace 的 `read_root` 必须位于全局 `read_roots` 内，`write_root` 必须位于全局 `write_roots` 内；否则配置校验失败。Workspace 不能扩大权限，只能把 Agent 的活动范围进一步缩小。
+
+详细配置见 [Workspace / Data Region](WORKSPACES.md)。
