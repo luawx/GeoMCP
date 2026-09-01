@@ -15,6 +15,7 @@ def test_load_config_from_fixture(tmp_path: Path):
         "permissions.yaml": "denied_capabilities: [delete]\n",
         "executors.yaml": "default_executor: cpu\n",
         "rag.yaml": "enabled: false\n",
+        "workspaces.yaml": "workspaces:\n  test:\n    read_root: /tmp\n    write_root: /tmp/out\n",
     }
     for name, body in files.items():
         (tmp_path / name).write_text(body, encoding="utf-8")
