@@ -7,7 +7,7 @@ def _call(method: str, *args, config_dir=None, **kwargs) -> ApiResult:
     try: return ok(getattr(DASService(config_dir=config_dir), method)(*args, **kwargs))
     except (GeoMCPError, OSError, ValueError, TypeError) as exc: return fail(type(exc).__name__.upper(), str(exc))
 
-def inspect(path, *, config_dir=None): return _call("inspect", path, config_dir=config_dir)
+def inspect(path, *, workspace=None, config_dir=None): return _call("inspect", path, workspace=workspace, config_dir=config_dir)
 def read_window(path, *, config_dir=None, **kwargs): return _call("read_window", path, config_dir=config_dir, **kwargs)
 def bandpass(path, *, freqmin, freqmax, config_dir=None, **kwargs): return _call("bandpass", path, freqmin=freqmin, freqmax=freqmax, config_dir=config_dir, **kwargs)
 def rms(path, *, config_dir=None, **kwargs): return _call("rms", path, config_dir=config_dir, **kwargs)
