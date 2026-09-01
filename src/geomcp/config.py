@@ -1,12 +1,13 @@
 """Central configuration loading and validation."""
 from __future__ import annotations
 import os
+import re
 from pathlib import Path
 from typing import Any
 import yaml
 from .exceptions import ConfigurationError
 
-CONFIG_FILES = ("geomcp.yaml", "paths.yaml", "permissions.yaml", "executors.yaml", "rag.yaml")
+CONFIG_FILES = ("geomcp.yaml", "paths.yaml", "permissions.yaml", "executors.yaml", "rag.yaml", "workspaces.yaml")
 
 def find_project_root(start: str | Path | None = None) -> Path:
     if env_root := os.getenv("GEOMCP_HOME"):
@@ -37,6 +38,12 @@ def load_config(config_dir: str | Path | None = None) -> dict[str, Any]:
     validate_config(config)
     return config
 
+def _resolved_roots(values: list[Any]) -> tuple[Path, ...]:
+    return tuple(Path(str(value)).expanduser().resolve(strict=False) for value in values)
+
+def _within(path: Path, root: Path) -> bool:
+    return path == root or root in path.parents
+
 def validate_config(config: dict[str, Any]) -> None:
     try:
         read_roots = config["paths"]["read_roots"]; write_roots = config["paths"]["write_roots"]
@@ -50,6 +57,31 @@ def validate_config(config: dict[str, Any]) -> None:
     if not isinstance(denied, list): raise ConfigurationError("permissions.denied_capabilities must be a list")
     overlap = set(map(str, allowed)) & set(map(str, denied))
     if overlap: raise ConfigurationError(f"Capabilities cannot be both allowed and denied: {', '.join(sorted(overlap))}")
+
+    read_bounds = _resolved_roots(read_roots)
+    write_bounds = _resolved_roots(write_roots)
+    workspace_cfg = config.get("workspaces", {})
+    workspaces = workspace_cfg.get("workspaces", {}) if isinstance(workspace_cfg, dict) else None
+    if not isinstance(workspaces, dict) or not workspaces:
+        raise ConfigurationError("workspaces.workspaces must be a non-empty mapping")
+    for name, spec in workspaces.items():
+        if not isinstance(name, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", name):
+            raise ConfigurationError(f"Invalid workspace name: {name!r}")
+        if not isinstance(spec, dict):
+            raise ConfigurationError(f"Workspace {name} must be a mapping")
+        read_root = spec.get("read_root")
+        write_root = spec.get("write_root")
+        if not isinstance(read_root, str) or not read_root.strip():
+            raise ConfigurationError(f"Workspace {name} is missing read_root")
+        if not isinstance(write_root, str) or not write_root.strip():
+            raise ConfigurationError(f"Workspace {name} is missing write_root")
+        resolved_read = Path(read_root).expanduser().resolve(strict=False)
+        resolved_write = Path(write_root).expanduser().resolve(strict=False)
+        if not any(_within(resolved_read, root) for root in read_bounds):
+            raise ConfigurationError(f"Workspace {name} read_root is outside paths.read_roots: {resolved_read}")
+        if not any(_within(resolved_write, root) for root in write_bounds):
+            raise ConfigurationError(f"Workspace {name} write_root is outside paths.write_roots: {resolved_write}")
+
     executors = config.get("executors", {})
     if not isinstance(executors, dict): raise ConfigurationError("executors configuration must be a mapping")
     gpu = executors.get("gpu", {})
