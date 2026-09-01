@@ -8,13 +8,13 @@ version = "0.1.0a1"
 description = "Safe geophysics research services for humans and AI agents"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = [
-  "PyYAML>=6,<7",
-]
+dependencies = ["PyYAML>=6,<7"]
 
 [project.optional-dependencies]
 mcp = ["mcp>=2,<3"]
-test = ["pytest>=8,<9", "mcp>=2,<3"]
+das = ["daspy-toolbox>=1.2.7,<2"]
+test = ["pytest>=8,<9", "mcp>=2,<3", "numpy>=1.26"]
+all = ["mcp>=2,<3", "daspy-toolbox>=1.2.7,<2"]
 
 [project.scripts]
 geomcp = "geomcp.cli.main:main"

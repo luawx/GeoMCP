@@ -1,6 +1,15 @@
 default_executor: cpu
 cpu:
   node: "1012"
+  max_workers: 4
+  timeout: 300
+  memory_soft_limit_mb: 8192
 gpu:
   node: "1015"
   enabled: false
+  host: ""
+  port: 1015
+  username: ""
+  python: "python"
+  config_dir: /cluster/datapool2/xuxy/GeoMCP/config
+  ssh_executable: ssh

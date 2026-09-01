@@ -1,55 +1,20 @@
 # Step 06 — Job Manager
 
-## 目标
+状态：已实现。
 
-为耗时任务建立统一生命周期管理。
+Job 生命周期：`queued -> running -> completed|failed|cancelled`。非法状态转换会被拒绝。
 
-## Job 状态
-
-```text
-queued
-running
-completed
-failed
-cancelled
-```
-
-## Job 至少记录
+持久化：
 
 ```text
-job_id
-tool
-task_type
-executor
-status
-input
-parameters
-created_at
-started_at
-finished_at
-progress
-output
-error
+runtime/jobs.db
+runtime/jobs/<job_id>.json
+runtime/jobs/<job_id>.log
 ```
 
-## 存储
+每个 Job 记录 `job_id/tool/task_type/executor/status/input/parameters/created_at/started_at/finished_at/progress/output/error`，并附带受控 executor metadata。
 
-第一阶段：
-
-```text
-SQLite + JSON + 共享目录
-```
-
-结构：
-
-```text
-runtime/
-├── jobs.db
-└── jobs/
-    └── <job_id>.json
-```
-
-## 人工接口
+人工接口：
 
 ```bash
 geomcp job list
@@ -59,19 +24,6 @@ geomcp job logs JOB_ID
 geomcp job cancel JOB_ID
 ```
 
-cancel 只终止任务，不删除科研数据。
+MCP：`job.list`、`job.status`、`job.result`、`job.cancel`。
 
-## MCP
-
-提供：
-
-```text
-job.list
-job.status
-job.result
-job.cancel
-```
-
-## 验收
-
-至少测试 queued → running → completed、failed、cancelled 以及非法状态转换。
+`cancel` 只改变/终止任务，不删除输入数据、输出数据或 Job 记录。

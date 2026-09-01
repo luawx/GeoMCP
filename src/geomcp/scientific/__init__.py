@@ -1,1 +1,2 @@
-"""GeoMCP scientific package."""
+from . import das
+__all__ = ["das"]
