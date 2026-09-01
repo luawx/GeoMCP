@@ -1,0 +1,6 @@
+default_executor: cpu
+cpu:
+  node: "1012"
+gpu:
+  node: "1015"
+  enabled: false

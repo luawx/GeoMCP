@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "geomcp"
+version = "0.1.0a1"
+description = "Safe geophysics research services for humans and AI agents"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "PyYAML>=6,<7",
+]
+
+[project.optional-dependencies]
+mcp = ["mcp>=2,<3"]
+test = ["pytest>=8,<9"]
+
+[project.scripts]
+geomcp = "geomcp.cli.main:main"
+geomcp-mcp = "geomcp.mcp.server:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]

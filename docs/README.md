@@ -2,6 +2,29 @@
 
 本目录保存 GeoMCP 的分步开发计划。每一步独立成文档，建议严格按编号推进。
 
+## 当前实现状态
+
+- [x] Step 01 — Project Core
+- [x] Step 02 — Permission / Path Sandbox
+- [x] Step 03 — Python API
+- [x] Step 04 — CLI
+- [x] Step 05 — MCP
+- [ ] Step 06 — Job Manager
+- [ ] Step 07 — CPU Executor
+- [ ] Step 08 — GPU Executor
+- [ ] Step 09 — GPU Worker
+- [ ] Step 10 — DAS Basic
+- [ ] Step 11 — RAG
+- [ ] Step 12 — Research Memory
+- [ ] Step 13 — DAS Advanced
+- [ ] Step 14 — Catalog / HypoDD / NLLoc / MatchLocate
+- [ ] Step 15 — 集成验收与发布
+
+## 使用文档
+
+- [基础使用指南](USAGE.md)
+- [无外网服务器部署与 MCP 配置](OFFLINE_SERVER_DEPLOYMENT.md)
+
 ## 开发顺序
 
 1. [Project Core](01_Project_Core.md)

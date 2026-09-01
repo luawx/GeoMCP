@@ -1,0 +1,7 @@
+default_policy: deny
+raw_data_write: false
+denied_capabilities:
+  - delete
+  - recursive_delete
+  - arbitrary_shell
+  - arbitrary_ssh

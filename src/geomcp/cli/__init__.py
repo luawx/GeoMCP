@@ -1,0 +1,1 @@
+"""GeoMCP command-line interface."""
