@@ -78,4 +78,10 @@ pytest -q
 
 1012 作为控制侧；GPU Executor 默认关闭，配置固定 endpoint 后由 1012 把 Job ID 转发给 1015 Worker。
 
-详细使用见 [docs/USAGE.md](docs/USAGE.md)，离线服务器部署见 [docs/OFFLINE_SERVER_DEPLOYMENT.md](docs/OFFLINE_SERVER_DEPLOYMENT.md)，开发状态见 [docs/README.md](docs/README.md)。
+## 文档
+
+- [文档总览](docs/README.md)
+- [基础使用指南](docs/getting-started/USAGE.md)
+- [新增工具开发指南](docs/development/TOOL_DEVELOPMENT.md)
+- [开发路线图](docs/development/ROADMAP.md)
+- [离线服务器部署](docs/deployment/OFFLINE_SERVER_DEPLOYMENT.md)
