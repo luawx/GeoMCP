@@ -6,6 +6,7 @@ def test_registry_contains_hardened_step_06_10_tools():
     assert names == [
         "system.status",
         "filesystem.inspect",
+        "workspace.list",
         "job.list",
         "job.status",
         "job.result",
@@ -21,6 +22,8 @@ def test_registry_contains_hardened_step_06_10_tools():
     assert all("delete" not in name for name in names)
     assert all("ssh" not in name for name in names)
     assert all("config_dir" not in tool.input_schema.get("properties", {}) for tool in registry.list())
+    for name in ("das.inspect", "das.read_window", "das.bandpass", "das.rms", "das.plot"):
+        assert "workspace" in registry.get(name).input_schema["properties"]
 
 def test_mcp_window_payload_is_compact():
     payload = {
