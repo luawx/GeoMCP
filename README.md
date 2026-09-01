@@ -29,16 +29,47 @@ Scientific Core + Job Manager + Permission
 - MCP、CLI、Python API 共用同一套 Service / Scientific Core
 - 原始科研数据默认只读
 - Agent 不提供任意 Shell、任意 SSH、删除工具
-- 长任务统一进入 Job Manager
-- GPU 任务只能执行 Worker Registry 中注册的任务
+- 长任务统一进入 Job Manager（Step 06 开始实现）
+- GPU 任务只能执行 Worker Registry 中注册的任务（Step 08–09 实现）
 
-## 开发状态
+## 当前开发状态
 
-项目目前处于基础架构开发阶段。
+已完成 Step 01–05：
 
-详细开发顺序与每一步验收标准见：
+1. Project Core
+2. Permission / Path Sandbox
+3. Python API
+4. CLI
+5. MCP
 
-[docs/README.md](docs/README.md)
+当前可用能力：
+
+```text
+Python API: system_status / inspect_path
+CLI:        geomcp system status
+            geomcp config show
+            geomcp config validate
+            geomcp filesystem inspect PATH
+MCP:        system.status
+            filesystem.inspect
+```
+
+Job Manager、CPU/GPU Executor、DAS、RAG、Memory 与地震学封装仍按后续步骤开发。
+
+## 安装后快速验证
+
+```bash
+export GEOMCP_CONFIG_DIR=/cluster/datapool2/xuxy/GeoMCP/config
+geomcp config validate
+geomcp system status
+geomcp filesystem inspect /cluster/datapool2/xuxy
+```
+
+完整使用方法见 [docs/USAGE.md](docs/USAGE.md)。
+
+无法连接外网的服务器部署见 [docs/OFFLINE_SERVER_DEPLOYMENT.md](docs/OFFLINE_SERVER_DEPLOYMENT.md)。
+
+完整开发计划见 [docs/README.md](docs/README.md)。
 
 ## 推荐项目目录
 

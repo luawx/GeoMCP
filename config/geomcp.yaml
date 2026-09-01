@@ -1,0 +1,5 @@
+project:
+  name: GeoMCP
+  environment: server
+  control_node: "1012"
+  gpu_node: "1015"

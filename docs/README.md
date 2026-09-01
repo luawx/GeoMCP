@@ -2,23 +2,48 @@
 
 本目录保存 GeoMCP 的分步开发计划。每一步独立成文档，建议严格按编号推进。
 
+## 使用文档
+
+- [使用指南](USAGE.md)
+- [无外网服务器离线部署](OFFLINE_SERVER_DEPLOYMENT.md)
+
 ## 开发顺序
 
-1. [Project Core](01_Project_Core.md)
-2. [Permission / Path Sandbox](02_Permission_Path_Sandbox.md)
-3. [Python API](03_Python_API.md)
-4. [CLI](04_CLI.md)
-5. [MCP](05_MCP.md)
-6. [Job Manager](06_Job_Manager.md)
-7. [CPU Executor](07_CPU_Executor.md)
-8. [GPU Executor](08_GPU_Executor.md)
-9. [GPU Worker](09_GPU_Worker.md)
-10. [DAS Basic](10_DAS_Basic.md)
-11. [RAG](11_RAG.md)
-12. [Research Memory](12_Research_Memory.md)
-13. [DAS Advanced](13_DAS_Advanced.md)
-14. [Catalog / HypoDD / NLLoc / MatchLocate](14_Seismology_Wrappers.md)
-15. [集成验收与发布](15_Integration_Release.md)
+1. ✅ [Project Core](01_Project_Core.md)
+2. ✅ [Permission / Path Sandbox](02_Permission_Path_Sandbox.md)
+3. ✅ [Python API](03_Python_API.md)
+4. ✅ [CLI](04_CLI.md)
+5. ✅ [MCP](05_MCP.md)
+6. ⬜ [Job Manager](06_Job_Manager.md)
+7. ⬜ [CPU Executor](07_CPU_Executor.md)
+8. ⬜ [GPU Executor](08_GPU_Executor.md)
+9. ⬜ [GPU Worker](09_GPU_Worker.md)
+10. ⬜ [DAS Basic](10_DAS_Basic.md)
+11. ⬜ [RAG](11_RAG.md)
+12. ⬜ [Research Memory](12_Research_Memory.md)
+13. ⬜ [DAS Advanced](13_DAS_Advanced.md)
+14. ⬜ [Catalog / HypoDD / NLLoc / MatchLocate](14_Seismology_Wrappers.md)
+15. ⬜ [集成验收与发布](15_Integration_Release.md)
+
+## 当前可运行入口
+
+```text
+Python API
+  ├── system_status
+  └── inspect_path
+
+CLI
+  ├── geomcp system status
+  ├── geomcp config show
+  ├── geomcp config validate
+  └── geomcp filesystem inspect PATH
+
+MCP
+  ├── system.status
+  └── filesystem.inspect
+```
+
+所有 filesystem 路径访问都先通过 Path Sandbox；当前没有 delete、recursive delete、任意 Shell、任意 SSH 或任意 executable path 接口。
 
 ## 版本对应
 

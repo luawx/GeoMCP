@@ -1,0 +1,5 @@
+executors:
+  cpu:
+    enabled: false
+  gpu:
+    enabled: false

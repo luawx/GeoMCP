@@ -1,0 +1,7 @@
+capabilities:
+  inspect: true
+  write: true
+  delete: false
+  recursive_delete: false
+  arbitrary_shell: false
+  arbitrary_ssh: false

@@ -1,0 +1,6 @@
+read_roots:
+  - /cluster/datapool2/xuxy
+write_roots:
+  - /cluster/datapool2/xuxy/GeoMCP/outputs
+  - /cluster/datapool2/xuxy/GeoMCP/runtime
+  - /cluster/datapool2/xuxy/GeoMCP/knowledge
