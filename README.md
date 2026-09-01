@@ -8,6 +8,7 @@ GeoMCP 是面向地球物理科研服务器的安全工具与知识服务平台�
 
 ```text
 Permission / Path Sandbox
+Workspace / Data Region I/O
 Python API + CLI + MCP
 Job Manager (SQLite + JSON mirror)
 Local CPU Executor
@@ -21,6 +22,7 @@ DAS Basic (DASPy)
 ```text
 system.status
 filesystem.inspect
+workspace.list
 job.list
 job.status
 job.result
@@ -36,6 +38,8 @@ das.plot
 ## v0.1 封板状态
 
 Step 10.1 Hardening 已补齐：CI 全量 DAS 依赖、SQLite 原子 Job 状态转换、dispatch watchdog、MCP 固定配置边界、CPU/GPU healthcheck 闭环、DASPy 真正按 channel/sample 窗口读取，以及 MCP DAS 窗口结果压缩。
+
+在此基础上加入 Workspace / Data Region：Agent 可以选择管理员配置的科研区域并使用相对输入/输出路径，但 Workspace 不能扩大全局 Path Sandbox。
 
 MCP 不接受 `config_dir`、host、port、username、command 或任意 task type。
 
@@ -71,6 +75,7 @@ pytest -q
 - `/cluster/datapool2/xuxy/**` 默认可读
 - 仅 GeoMCP `runtime/outputs/knowledge` 默认可写
 - 原始科研数据默认只读
+- Agent 可通过 Workspace 使用相对输入/输出路径，但 Workspace 不能扩大全局 Path Sandbox
 - 不暴露 delete、任意 Shell、任意 SSH
 - GPU endpoint 只能由服务器配置指定，Agent 不能传 host/port/user/command
 - Worker 只执行 Registry 白名单任务
@@ -82,6 +87,7 @@ pytest -q
 
 - [文档总览](docs/README.md)
 - [基础使用指南](docs/getting-started/USAGE.md)
+- [Workspace / Data Region](docs/architecture/WORKSPACES.md)
 - [新增工具开发指南](docs/development/TOOL_DEVELOPMENT.md)
 - [开发路线图](docs/development/ROADMAP.md)
 - [离线服务器部署](docs/deployment/OFFLINE_SERVER_DEPLOYMENT.md)
