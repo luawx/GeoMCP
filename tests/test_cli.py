@@ -17,6 +17,7 @@ def write_config(config_dir: Path, root: Path):
         ),
         "executors.yaml": "default_executor: cpu\n",
         "rag.yaml": "enabled: false\n",
+        "workspaces.yaml": f"workspaces:\n  test:\n    read_root: {root}\n    write_root: {out}\n",
     }
     for name, text in files.items():
         (config_dir / name).write_text(text, encoding="utf-8")
