@@ -52,3 +52,24 @@ geomcp config validate
 ```
 
 均可正常执行。
+
+
+## Workspace / Data Region
+
+查看管理员配置的科研区域：
+
+```bash
+geomcp workspace list --json
+```
+
+DAS 命令支持：
+
+```bash
+geomcp das inspect raw/event001.h5 --workspace guangzhou_das --json
+
+geomcp das plot raw/event001.h5 \
+  --workspace guangzhou_das \
+  --output-path event001/preview.png --json
+```
+
+传 `--workspace` 后，`path` 和 `--output-path` 都按 Workspace root 解析，并禁止绝对路径与路径逃逸。
