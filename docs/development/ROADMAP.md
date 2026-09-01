@@ -12,7 +12,7 @@
 - [x] Step 08 — GPU Executor
 - [x] Step 09 — GPU Worker
 - [x] Step 10 — DAS Basic
-- [x] Step 10.1 — v0.1 Hardening / Release Gate
+- [x] Step 10.1 — v0.1 Hardening / Release Gate\n- [x] Workspace / Data Region — Agent-controlled safe I/O regions
 - [ ] Step 11 — RAG
 - [ ] Step 12 — Research Memory
 - [ ] Step 13 — DAS Advanced
