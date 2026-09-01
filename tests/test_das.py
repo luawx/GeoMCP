@@ -165,3 +165,36 @@ def test_das_rejects_nyquist_and_large_window(config_factory, monkeypatch):
         config_dir=config_dir,
     )
     assert not too_big.success
+
+
+def test_das_workspace_relative_input_and_output(config_factory, monkeypatch):
+    config_dir, root, _, outputs = config_factory()
+    sample = root / "raw" / "sample.h5"
+    sample.parent.mkdir()
+    sample.write_bytes(b"fake")
+    calls = []
+    monkeypatch.setattr(core, "_daspy_read", lambda: make_fake_read(calls))
+
+    meta = das.inspect("raw/sample.h5", workspace="test", config_dir=config_dir)
+    assert meta.success
+    assert meta.data["path"] == str(sample.resolve())
+
+    bp = das.bandpass(
+        "raw/sample.h5",
+        workspace="test",
+        freqmin=1,
+        freqmax=20,
+        channel_start=10,
+        channel_stop=12,
+        sample_start=0,
+        sample_stop=4,
+        output_path="processed/event001/filter.npy",
+        config_dir=config_dir,
+    )
+    assert bp.success
+    assert Path(bp.data["output_path"]) == (outputs / "processed" / "event001" / "filter.npy").resolve()
+    assert Path(bp.data["output_path"]).is_file()
+
+    rejected = das.inspect(str(sample), workspace="test", config_dir=config_dir)
+    assert not rejected.success
+    assert rejected.error_code == "INVALIDPATHERROR"
