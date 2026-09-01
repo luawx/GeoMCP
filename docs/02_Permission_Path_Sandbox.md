@@ -38,6 +38,8 @@ config/permissions.yaml
 ```text
 输入
 ↓
+capability allowlist
+↓
 normalize
 ↓
 resolve()
@@ -57,6 +59,14 @@ resolve()
 - 原始数据写入
 - allowed root 外访问
 
+能力策略默认采用：
+
+```yaml
+default_policy: deny
+```
+
+只有 `allowed_capabilities` 中明确列出的能力才允许执行；`denied_capabilities` 始终优先拒绝。未知或未来新增能力在未加入 allowlist 前自动拒绝。
+
 禁止能力：
 
 ```text
@@ -68,6 +78,6 @@ arbitrary_ssh
 
 ## 验收
 
-必须覆盖合法路径、/etc、其他用户目录、../、符号链接越界、原始数据写入等测试。
+必须覆盖合法路径、/etc、其他用户目录、../、符号链接越界、原始数据写入、显式 deny 以及未知 capability 等测试。
 
 所有安全判断采用 fail closed。
