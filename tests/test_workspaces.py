@@ -4,8 +4,15 @@ import pytest
 
 from geomcp.api import system, workspace
 from geomcp.cli.main import main
+from geomcp.config import load_config
 from geomcp.exceptions import InvalidPathError, PermissionDenied
+from geomcp.services.permissions import PathPolicy
 from geomcp.services.workspaces import WorkspaceManager
+
+
+def manager_for(config_dir: Path) -> WorkspaceManager:
+    config = load_config(config_dir)
+    return WorkspaceManager(config, policy=PathPolicy.from_config(config))
 
 
 def test_workspace_list_and_relative_resolution(config_factory):
@@ -25,13 +32,7 @@ def test_workspace_list_and_relative_resolution(config_factory):
         }
     ]
 
-    manager = WorkspaceManager()
-    manager = WorkspaceManager.__new__(WorkspaceManager)
-    from geomcp.config import load_config
-    from geomcp.services.permissions import PathPolicy
-    config = load_config(config_dir)
-    manager = WorkspaceManager(config, policy=PathPolicy.from_config(config))
-
+    manager = manager_for(config_dir)
     assert manager.resolve_read("test", "raw/sample.h5") == sample.resolve()
     assert manager.resolve_write("test", "processed/result.npy") == (outputs / "processed" / "result.npy").resolve()
 
@@ -40,11 +41,7 @@ def test_workspace_rejects_absolute_traversal_and_unknown(config_factory):
     config_dir, root, _, _ = config_factory()
     sample = root / "sample.h5"
     sample.write_bytes(b"fake")
-
-    from geomcp.config import load_config
-    from geomcp.services.permissions import PathPolicy
-    config = load_config(config_dir)
-    manager = WorkspaceManager(config, policy=PathPolicy.from_config(config))
+    manager = manager_for(config_dir)
 
     with pytest.raises(InvalidPathError):
         manager.resolve_read("test", sample)
