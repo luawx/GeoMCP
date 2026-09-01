@@ -7,7 +7,7 @@ from typing import Any
 import yaml
 from .exceptions import ConfigurationError
 
-CONFIG_FILES = ("geomcp.yaml", "paths.yaml", "permissions.yaml", "executors.yaml", "rag.yaml", "workspaces.yaml")
+CONFIG_FILES = ("geomcp.yaml", "paths.yaml", "permissions.yaml", "executors.yaml", "rag.yaml")\nOPTIONAL_CONFIG_FILES = ("workspaces.yaml",)
 
 def find_project_root(start: str | Path | None = None) -> Path:
     if env_root := os.getenv("GEOMCP_HOME"):
