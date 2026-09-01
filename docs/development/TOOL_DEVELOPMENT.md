@@ -50,7 +50,7 @@ CLI / Python API / MCP
 | 层 | 主要职责 | 不应该做的事 |
 |---|---|---|
 | Scientific Core | 科学算法、参数合法性、第三方库调用 | 不决定服务器权限，不直接暴露给 Agent |
-| Service | capability 检查、读写路径检查、默认输出目录、业务边界 | 不绕过 PathPolicy |
+| Service | capability 检查、Workspace/读写路径检查、默认输出目录、业务边界 | 不绕过 PathPolicy |
 | API | 把异常转换成统一 `ApiResult` | 不复制科学算法 |
 | CLI | 人工命令行入口 | 不直接调用 Scientific Core |
 | MCP | Agent 工具定义、JSON Schema、上下文压缩 | 不暴露 config_dir / SSH / 任意 command |
@@ -242,6 +242,20 @@ def run(path, *, parameter: float):
 
 Service 是整个安全边界的核心。
 
+如果工具允许 Agent 指定项目级输入/输出区域，应复用 `WorkspaceManager`，不要自己拼路径。规则是：
+
+```text
+workspace + relative path
+↓
+WorkspaceManager
+↓
+PathPolicy
+↓
+Scientific Core / JobManager
+```
+
+Workspace 只能缩小全局 `read_roots/write_roots`，不能扩大它。
+
 典型结构：
 
 ```python
@@ -386,6 +400,20 @@ reg(
     ["path", "parameter"],
 )
 ```
+
+### Workspace 参数
+
+对于需要项目级输入/输出的工具，可以加入可选：
+
+```json
+{
+  "workspace": "guangzhou_das",
+  "path": "raw/event001.h5",
+  "output_path": "event001/result.dat"
+}
+```
+
+有 `workspace` 时路径必须是相对路径；无 `workspace` 时可保留旧的绝对路径 API 以兼容人工脚本。
 
 ### MCP 的特殊限制
 
