@@ -10,6 +10,8 @@ def make_policy(read_root: Path, write_root: Path) -> PathPolicy:
     return PathPolicy(
         read_roots=(read_root.resolve(),),
         write_roots=(write_root.resolve(),),
+        default_policy="deny",
+        allowed_capabilities=frozenset({"filesystem.inspect", "filesystem.read", "filesystem.write"}),
         denied_capabilities=frozenset({"delete", "arbitrary_shell", "arbitrary_ssh"}),
     )
 
@@ -55,10 +57,21 @@ def test_symlink_escape_is_rejected(tmp_path: Path):
         policy.validate_read(link / "secret.txt")
 
 
-def test_denied_capability_is_fail_closed(tmp_path: Path):
+def test_explicitly_denied_capability_is_rejected(tmp_path: Path):
     policy = make_policy(tmp_path, tmp_path)
     with pytest.raises(PermissionDenied):
         policy.assert_capability_allowed("delete")
+
+
+def test_unknown_capability_is_rejected_by_default(tmp_path: Path):
+    policy = make_policy(tmp_path, tmp_path)
+    with pytest.raises(PermissionDenied):
+        policy.assert_capability_allowed("future.unregistered.operation")
+
+
+def test_explicitly_allowed_capability_is_accepted(tmp_path: Path):
+    policy = make_policy(tmp_path, tmp_path)
+    policy.assert_capability_allowed("filesystem.inspect")
 
 
 def test_inspect_returns_metadata(tmp_path: Path):
