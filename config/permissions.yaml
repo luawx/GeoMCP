@@ -10,6 +10,7 @@ allowed_capabilities:
   - job.result
   - job.logs
   - job.cancel
+  - job.submit_healthcheck
   - das.inspect
   - das.read
   - das.process

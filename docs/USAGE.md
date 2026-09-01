@@ -44,11 +44,13 @@ geomcp job status JOB_ID --json
 geomcp job result JOB_ID --json
 geomcp job logs JOB_ID
 geomcp job cancel JOB_ID --json
+geomcp job healthcheck --executor cpu --json
+geomcp job healthcheck --executor gpu --json
 ```
 
 Job 状态：`queued / running / completed / failed / cancelled`。取消不删除任何科研数据。
 
-受控任务由内部 Scientific Service / JobManager 提交，不提供“任意命令提交”工具。
+受控任务由内部 Scientific Service / JobManager 提交，不提供“任意命令提交”工具。对外只增加严格白名单的 CPU/GPU healthcheck，用于验证 Executor/Worker 链路。
 
 ## 5. CPU / GPU Executor
 
@@ -75,6 +77,9 @@ geomcp das inspect /cluster/datapool2/xuxy/data/example.h5 --json
 ```
 
 读取小窗口：
+
+Python API / CLI 可以返回完整受限窗口；MCP 的 `das.read_window` 只返回 metadata、shape、point_count 和小型 preview，避免把大数组注入 Agent 上下文。
+
 
 ```bash
 geomcp das read-window FILE \
@@ -118,6 +123,7 @@ job.list
 job.status
 job.result
 job.cancel
+job.submit_healthcheck
 das.inspect
 das.read_window
 das.bandpass
@@ -125,4 +131,4 @@ das.rms
 das.plot
 ```
 
-MCP、CLI、Python API 复用同一 Service / Permission / Scientific Core。
+MCP、CLI、Python API 复用同一 Service / Permission / Scientific Core。MCP 的配置目录在服务器启动时固定，工具参数中不暴露 `config_dir`。

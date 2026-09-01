@@ -25,12 +25,19 @@ job.list
 job.status
 job.result
 job.cancel
+job.submit_healthcheck
 das.inspect
 das.read_window
 das.bandpass
 das.rms
 das.plot
 ```
+
+## v0.1 封板状态
+
+Step 10.1 Hardening 已补齐：CI 全量 DAS 依赖、SQLite 原子 Job 状态转换、dispatch watchdog、MCP 固定配置边界、CPU/GPU healthcheck 闭环、DASPy 真正按 channel/sample 窗口读取，以及 MCP DAS 窗口结果压缩。
+
+MCP 不接受 `config_dir`、host、port、username、command 或任意 task type。
 
 ## 安装
 

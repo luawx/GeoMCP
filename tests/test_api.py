@@ -1,5 +1,4 @@
 from pathlib import Path
-
 from geomcp.api import jobs
 from geomcp.api.filesystem import inspect
 from geomcp.api.system import status
@@ -46,4 +45,11 @@ def test_filesystem_api_rejects_outside_path(tmp_path: Path):
     assert result.error_code == "PERMISSIONDENIED"
 
 def test_jobs_api_available_after_step_06():
-    assert set(jobs.__all__) == {"list_jobs", "status", "result", "logs", "cancel"}
+    assert set(jobs.__all__) == {
+        "list_jobs",
+        "status",
+        "result",
+        "logs",
+        "cancel",
+        "submit_healthcheck",
+    }

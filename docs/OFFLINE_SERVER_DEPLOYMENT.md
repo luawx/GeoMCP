@@ -116,7 +116,7 @@ codex mcp add geomcp -- ssh asgroup /cluster/datapool2/xuxy/GeoMCP/scripts/run_m
 codex mcp get geomcp
 ```
 
-Codex 只是通过 SSH 启动固定 MCP stdio 入口；GeoMCP 本身不暴露任意 shell/SSH 工具。
+Codex 只是通过 SSH 启动固定 MCP stdio 入口；GeoMCP 本身不暴露任意 shell/SSH 工具。`config_dir` 只由管理员在 MCP 启动时设置，不作为 MCP Tool 参数暴露给 Agent。
 
 ## 6. v0.1 验收
 
