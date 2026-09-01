@@ -183,6 +183,8 @@ tests/
 
 config/
 ├── permissions.yaml
+├── paths.yaml
+├── workspaces.yaml        # 可选；Agent 命名科研区域
 ├── geomcp.yaml            # 工具运行限制
 └── executors.yaml         # 仅 Executor 相关配置
 ```
@@ -279,9 +281,10 @@ class ExampleService:
 如果产生文件：
 
 1. 默认输出到 GeoMCP `outputs/`；
-2. 用户指定输出路径时仍必须 `validate_write()`；
-3. 不覆盖 read-only 原始数据；
-4. 不提供 delete。
+2. 使用 Workspace 时，输入/输出必须经过 `WorkspaceManager.resolve_read/resolve_write()`；
+3. 用户指定绝对输出路径时仍必须 `validate_write()`；
+4. 不覆盖 read-only 原始数据；
+5. 不提供 delete。
 
 ### capability
 
@@ -671,8 +674,9 @@ Skill 只负责教 Agent 如何正确使用工具，不负责实现权限。真�
 提交 PR 前逐项确认：
 
 - [ ] Scientific Core 与 Service 已分层；
-- [ ] 所有输入路径经过 `validate_read()`；
-- [ ] 所有输出路径经过 `validate_write()`；
+- [ ] 所有输入路径经过 `validate_read()`，或 WorkspaceManager 后再进入 PathPolicy；
+- [ ] 所有输出路径经过 `validate_write()`，或 WorkspaceManager 后再进入 PathPolicy；
+- [ ] Workspace 不能扩大全局 read/write roots；
 - [ ] 新 capability 已显式加入权限配置；
 - [ ] 没有 delete / arbitrary shell / arbitrary SSH；
 - [ ] MCP 没有暴露服务器配置参数；
