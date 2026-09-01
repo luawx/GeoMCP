@@ -29,7 +29,12 @@ def create_server(registry: ToolRegistry | None = None):
 
     active_registry = registry or build_registry()
     for definition in active_registry.list():
-        server.tool(name=definition.name, description=definition.description)(definition.handler)
+        server.add_tool(
+            definition.handler,
+            name=definition.name,
+            description=definition.description,
+            structured_output=True,
+        )
 
     return server
 
