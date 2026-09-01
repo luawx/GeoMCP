@@ -14,7 +14,7 @@ dependencies = [
 
 [project.optional-dependencies]
 mcp = ["mcp>=2,<3"]
-test = ["pytest>=8,<9"]
+test = ["pytest>=8,<9", "mcp>=2,<3"]
 
 [project.scripts]
 geomcp = "geomcp.cli.main:main"
