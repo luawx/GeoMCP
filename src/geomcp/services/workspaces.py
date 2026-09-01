@@ -31,7 +31,7 @@ class WorkspaceManager:
     def __init__(self, config: dict[str, Any] | None = None, *, policy: PathPolicy | None = None):
         self.config = config or load_config()
         self.policy = policy or PathPolicy.from_config(self.config)
-        raw = self.config["workspaces"]["workspaces"]
+        raw = self.config.get("workspaces", {}).get("workspaces", {})
         self._workspaces = {
             name: Workspace(
                 name=name,
