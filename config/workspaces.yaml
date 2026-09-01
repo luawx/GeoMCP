@@ -1,0 +1,5 @@
+workspaces:
+  geomcp:
+    description: Default GeoMCP research workspace
+    read_root: /cluster/datapool2/xuxy
+    write_root: /cluster/datapool2/xuxy/GeoMCP/outputs
