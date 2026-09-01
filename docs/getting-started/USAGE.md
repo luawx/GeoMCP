@@ -20,6 +20,14 @@ geomcp config validate
 
 默认路径策略：整个 `/cluster/datapool2/xuxy` 可读，仅 GeoMCP 的 runtime / outputs / knowledge 可写。
 
+Workspace/Data Region 在 `config/workspaces.yaml` 中定义。Workspace 只能缩小 `paths.yaml` 的权限，不能扩大它。先查看可用区域：
+
+```bash
+geomcp workspace list --json
+```
+
+如果要让 Agent 写入项目自己的 processed/results 目录，管理员必须先把该目录加入 `paths.write_roots`，再把它配置成某个 Workspace 的 `write_root`。详见 [Workspace / Data Region](../architecture/WORKSPACES.md)。
+
 GPU 默认关闭。部署前由管理员在 `config/executors.yaml` 设置固定 endpoint；MCP 工具本身没有 host/port/user/command 参数。
 
 ## 3. 基础接口
@@ -107,6 +115,21 @@ geomcp das plot FILE --channel-start 100 --channel-stop 120 --sample-stop 5000 -
 ```
 
 Bandpass/plot 默认生成文件到 GeoMCP outputs。用户指定 `--output-path` 时仍必须位于 write roots。
+
+也可以使用 Workspace 相对路径：
+
+```bash
+geomcp das inspect raw/event001.h5 \
+  --workspace guangzhou_das --json
+
+geomcp das bandpass raw/event001.h5 1 20 \
+  --workspace guangzhou_das \
+  --output-path event001/filter.npy \
+  --channel-start 100 --channel-stop 120 \
+  --sample-stop 5000 --json
+```
+
+传 `--workspace` 后，输入和输出路径必须是相对路径；绝对路径、`../` 和符号链接越界都会被拒绝。
 
 ## 7. MCP
 
