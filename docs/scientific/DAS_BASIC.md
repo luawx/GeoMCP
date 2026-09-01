@@ -50,3 +50,18 @@ geomcp das plot /cluster/datapool2/xuxy/data/example.h5 --channel-start 100 --ch
 ```
 
 Step 13 再加入连续数据、FK、beamforming、去噪等高级 DAS 能力。
+
+
+## Workspace 相对输入输出
+
+当前 DAS Basic 全部工具都支持可选 `workspace` 参数。示例：
+
+```bash
+geomcp workspace list --json
+geomcp das inspect raw/event001.h5 --workspace guangzhou_das --json
+geomcp das bandpass raw/event001.h5 1 20 \
+  --workspace guangzhou_das \
+  --output-path event001/filter.npy --json
+```
+
+输入相对于 Workspace `read_root`，输出相对于 `write_root`。Workspace 仍受全局 PathPolicy 约束。
