@@ -14,7 +14,7 @@ def config_factory(tmp_path):
         config = tmp_path / ("config_gpu" if gpu_enabled else "config")
         config.mkdir(exist_ok=True)
         allowed = (
-            "[system.status, filesystem.inspect, filesystem.read, filesystem.write, "
+            "[system.status, filesystem.inspect, filesystem.read, filesystem.write, workspace.list, "
             "job.list, job.status, job.result, job.logs, job.cancel, job.submit_healthcheck, "
             "das.inspect, das.read, das.process, das.plot]"
         )
@@ -43,5 +43,13 @@ def config_factory(tmp_path):
             encoding="utf-8",
         )
         (config / "rag.yaml").write_text("enabled: false\n", encoding="utf-8")
+        (config / "workspaces.yaml").write_text(
+            f"workspaces:\n"
+            f"  test:\n"
+            f"    description: Test workspace\n"
+            f"    read_root: {root}\n"
+            f"    write_root: {outputs}\n",
+            encoding="utf-8",
+        )
         return config, root, runtime, outputs
     return make
