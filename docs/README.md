@@ -12,6 +12,7 @@
 - [x] Step 08 — GPU Executor
 - [x] Step 09 — GPU Worker
 - [x] Step 10 — DAS Basic
+- [x] Step 10.1 — v0.1 Hardening / Release Gate
 - [ ] Step 11 — RAG
 - [ ] Step 12 — Research Memory
 - [ ] Step 13 — DAS Advanced
@@ -37,6 +38,7 @@
 8. [GPU Executor](08_GPU_Executor.md)
 9. [GPU Worker](09_GPU_Worker.md)
 10. [DAS Basic](10_DAS_Basic.md)
+10.1. [v0.1 Hardening](10_1_v0.1_Hardening.md)
 11. [RAG](11_RAG.md)
 12. [Research Memory](12_Research_Memory.md)
 13. [DAS Advanced](13_DAS_Advanced.md)
