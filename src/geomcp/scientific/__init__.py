@@ -1,0 +1,1 @@
+"""GeoMCP scientific package."""

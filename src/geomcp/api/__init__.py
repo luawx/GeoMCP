@@ -1,0 +1,1 @@
+"""GeoMCP API package."""
