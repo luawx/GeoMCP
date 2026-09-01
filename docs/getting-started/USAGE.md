@@ -142,6 +142,7 @@ geomcp-mcp
 ```text
 system.status
 filesystem.inspect
+workspace.list
 job.list
 job.status
 job.result
