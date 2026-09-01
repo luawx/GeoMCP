@@ -1,12 +1,23 @@
 # GeoMCP Agent Rules
 
-Use GeoMCP as the only server-side research tool interface when a registered GeoMCP tool exists.
+Use GeoMCP as the server-side research interface when a registered GeoMCP tool exists.
 
 - Never request or construct arbitrary shell commands through GeoMCP.
 - Never request arbitrary SSH execution through GeoMCP.
-- Do not delete server files.
-- Do not access paths outside the configured read roots.
+- Never delete server files through GeoMCP.
+- Do not access paths outside configured read roots.
 - Treat raw research data as read-only.
-- Do not download complete large DAS datasets to the client; inspect metadata or process server-side.
-- When Job Manager is available, use it for long-running work.
-- Do not connect directly to the GPU worker node; future GPU work must be dispatched through GeoMCP.
+- Use Job Manager for long-running registered work; cancellation never means deletion.
+- Never connect directly to the GPU worker node. GPU work must go through the fixed GeoMCP executor endpoint.
+- Never attempt to set GPU host, port, username, remote command, or CUDA environment through tool arguments.
+
+## DAS workflow
+
+1. Call `das.inspect` before processing a DAS file.
+2. Confirm sampling rate, channel/sample counts, time metadata and data shape.
+3. Request the smallest practical channel/sample window; do not read a whole large DAS file without need.
+4. For bandpass, keep `0 < freqmin < freqmax < sampling_rate/2`.
+5. Write plots/processed arrays only to GeoMCP-approved outputs paths.
+6. Prefer `das.rms` or `das.plot` over returning large raw windows when a summary/visual is sufficient.
+
+Current DAS Basic tools: `das.inspect`, `das.read_window`, `das.bandpass`, `das.rms`, `das.plot`. Advanced FK/beamforming/denoising belongs to later steps.

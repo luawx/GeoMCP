@@ -1,25 +1,16 @@
 # Step 10 — DAS Basic
 
-## 目标
+状态：已实现 v0.1 最低工具集，底层采用 DASPy。
 
-用第一批 DAS 工具验证 GeoMCP 从 Scientific Core 到 MCP 的完整链路。
+GeoMCP 可选依赖：
 
-## 第一批工具
-
-```text
-das.inspect
-das.metadata
-das.list_datasets
-das.read_window
-das.read_channels
-das.demean
-das.detrend
-das.bandpass
-das.rms
-das.plot
+```bash
+python -m pip install -e ".[das]"
 ```
 
-v0.1 最低完成：
+PyPI 包名是 `daspy-toolbox`，Python import 为 `daspy`。
+
+当前工具：
 
 ```text
 das.inspect
@@ -29,46 +20,33 @@ das.rms
 das.plot
 ```
 
-## 工具开发标准
-
-每个工具依次实现：
+完整链路：
 
 ```text
-Scientific Core
-↓
-Service
-↓
-Python API
-↓
-CLI
-↓
-MCP
-↓
-Skill
-↓
-Tests
+DASPy-backed Scientific Core
+  -> DASService + PathPolicy
+  -> Python API
+  -> CLI
+  -> MCP
+  -> Skill
 ```
 
-## DAS Skill 规则
+安全约束：
 
-任何处理前必须先 inspect，确认：
+- 所有输入路径先经过 read root 校验
+- 输出只能进入 write roots
+- 大窗口按 `geomcp.das.max_points` 拒绝，默认 200000 points
+- bandpass 必须满足 `0 < freqmin < freqmax < Nyquist`
+- 原始 DAS 文件只读
+- 处理前内部读取 metadata；Agent 侧也要求先调用 `das.inspect`
 
-- sampling rate
-- channels
-- samples
-- start time
-- 数据结构
+示例：
 
-禁止：
+```bash
+geomcp das inspect /cluster/datapool2/xuxy/data/example.h5 --json
+geomcp das rms /cluster/datapool2/xuxy/data/example.h5 --channel-start 100 --channel-stop 120 --sample-start 0 --sample-stop 5000 --json
+geomcp das bandpass /cluster/datapool2/xuxy/data/example.h5 1 20 --channel-start 100 --channel-stop 120 --sample-stop 5000 --json
+geomcp das plot /cluster/datapool2/xuxy/data/example.h5 --channel-start 100 --channel-stop 120 --sample-stop 5000 --json
+```
 
-- 根据文件名猜参数
-- 无必要读取完整大型 DAS
-- 滤波超过 Nyquist
-
-## Executor
-
-基础 DAS 默认运行在 1012 CPU。
-
-## 验收
-
-同一文件通过 Python API、CLI、MCP 的 inspect 结果必须来自同一核心实现。
+Step 13 再加入连续数据、FK、beamforming、去噪等高级 DAS 能力。

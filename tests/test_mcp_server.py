@@ -2,9 +2,7 @@ import asyncio
 from pathlib import Path
 
 from mcp import Client
-
 from geomcp.mcp.server import create_server
-
 
 def write_config(config_dir: Path, root: Path) -> None:
     out = root / "out"
@@ -24,7 +22,6 @@ def write_config(config_dir: Path, root: Path) -> None:
     for name, text in files.items():
         (config_dir / name).write_text(text, encoding="utf-8")
 
-
 def test_mcp_server_lists_and_calls_registry_tools(tmp_path: Path):
     root = tmp_path / "research"
     root.mkdir()
@@ -36,8 +33,19 @@ def test_mcp_server_lists_and_calls_registry_tools(tmp_path: Path):
     async def exercise() -> None:
         async with Client(create_server(), raise_exceptions=True) as client:
             tools = await client.list_tools()
-            assert [tool.name for tool in tools.tools] == ["system.status", "filesystem.inspect"]
-
+            assert [tool.name for tool in tools.tools] == [
+                "system.status",
+                "filesystem.inspect",
+                "job.list",
+                "job.status",
+                "job.result",
+                "job.cancel",
+                "das.inspect",
+                "das.read_window",
+                "das.bandpass",
+                "das.rms",
+                "das.plot",
+            ]
             result = await client.call_tool(
                 "filesystem.inspect",
                 {"path": str(sample), "config_dir": str(config_dir)},

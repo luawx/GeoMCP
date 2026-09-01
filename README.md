@@ -1,23 +1,19 @@
 # GeoMCP
 
-GeoMCP 是一个面向地球物理科研服务器的统一工具与知识服务平台。
+GeoMCP 是面向地球物理科研服务器的安全工具与知识服务平台，让 Codex / AI Agent、人工 CLI 和 Python 脚本共享同一套权限、任务和科学计算接口。
 
-目标是把服务器上的 DAS 数据处理、波形与地震目录处理、HypoDD、NLLoc、MatchLocate、RAG、Research Memory 以及 CPU/GPU 计算能力，统一封装为可由以下入口调用的科研基础设施：
+## 当前状态：v0.1（Step 01–10）
 
-```text
-Codex / AI Agent
-人工 CLI
-Python 脚本
-```
-
-## 当前状态
-
-基础层 Step 01–05 已实现：
+已实现：
 
 ```text
-Python API ─┐
-CLI ────────┼──> Services + Permission / Path Sandbox
-MCP ────────┘
+Permission / Path Sandbox
+Python API + CLI + MCP
+Job Manager (SQLite + JSON mirror)
+Local CPU Executor
+Fixed-endpoint Remote GPU Executor
+GPU Worker Registry
+DAS Basic (DASPy)
 ```
 
 当前 MCP 工具：
@@ -25,30 +21,54 @@ MCP ────────┘
 ```text
 system.status
 filesystem.inspect
+job.list
+job.status
+job.result
+job.cancel
+das.inspect
+das.read_window
+das.bandpass
+das.rms
+das.plot
 ```
 
-Job Manager、CPU/GPU Executor、DAS、RAG、Research Memory 和地震学 wrapper 将按 docs 中的后续步骤继续开发。
+## 安装
 
-## 快速开始
+基础 CLI / Python API：
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install -e ".[test,mcp]"
-pytest -q
-geomcp system status --json
+python -m pip install -e .
 ```
 
-详细使用方法见 [docs/USAGE.md](docs/USAGE.md)。
-不能连接公网的服务器部署见 [docs/OFFLINE_SERVER_DEPLOYMENT.md](docs/OFFLINE_SERVER_DEPLOYMENT.md)。
+MCP：
 
-## 核心安全边界
+```bash
+python -m pip install -e ".[mcp]"
+```
+
+DASPy 支持：
+
+```bash
+python -m pip install -e ".[das]"
+```
+
+开发与完整 v0.1：
+
+```bash
+python -m pip install -e ".[test,mcp,das]"
+pytest -q
+```
+
+## 安全边界
 
 - `/cluster/datapool2/xuxy/**` 默认可读
-- 仅 `GeoMCP/runtime`、`GeoMCP/outputs`、`GeoMCP/knowledge` 默认可写
+- 仅 GeoMCP `runtime/outputs/knowledge` 默认可写
 - 原始科研数据默认只读
-- 不提供删除、任意 Shell、任意 SSH
-- MCP、CLI、Python API 共用同一 Permission / Path Sandbox
-- 1012 负责控制；后续由 Job Manager 向 1015 GPU Worker 调度，Agent 不直接操作 1015
+- 不暴露 delete、任意 Shell、任意 SSH
+- GPU endpoint 只能由服务器配置指定，Agent 不能传 host/port/user/command
+- Worker 只执行 Registry 白名单任务
+- DAS 大窗口和超过 Nyquist 的滤波会被拒绝
 
-开发计划见 [docs/README.md](docs/README.md)。
+1012 作为控制侧；GPU Executor 默认关闭，配置固定 endpoint 后由 1012 把 Job ID 转发给 1015 Worker。
+
+详细使用见 [docs/USAGE.md](docs/USAGE.md)，离线服务器部署见 [docs/OFFLINE_SERVER_DEPLOYMENT.md](docs/OFFLINE_SERVER_DEPLOYMENT.md)，开发状态见 [docs/README.md](docs/README.md)。

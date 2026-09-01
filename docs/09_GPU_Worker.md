@@ -1,46 +1,24 @@
 # Step 09 — GPU Worker
 
-## 目标
+状态：已实现。
 
-在 1015 建立唯一受控的 GPU 任务执行入口。
-
-## Worker Registry
-
-只允许执行白名单任务，例如：
-
-```text
-rag.embedding
-rag.rerank
-das.fk
-das.beamforming
-das.ml_detect
-```
-
-未知任务立即拒绝。
-
-## 启动方式
-
-第一版：
+1015 唯一入口：
 
 ```bash
 python -m geomcp.worker.runner JOB_ID
 ```
 
-Worker 从共享 runtime 中读取任务，并再次验证：
+Worker Registry 是白名单。当前 GPU 验收任务：`gpu.healthcheck`。
 
-- task_type
-- 输入路径
-- 输出路径
-- 参数 schema
+Worker 会再次检查：
 
-CUDA、Conda、模型位置由 1015 本地配置管理。
+- Job ID 格式和 Job 是否存在
+- executor 是否为 `gpu`
+- task type 是否注册
+- task 是否属于 GPU executor
+- input / parameters 是否满足该任务 validator
+- timeout / worker process 状态
 
-## 验收
+未知任务或多余参数直接失败。Job JSON 中的字符串不会被解释为 shell 命令。
 
-注册一个 `gpu.healthcheck` 测试任务，并验证：
-
-- 1012 可触发
-- 1015 执行
-- 未注册任务拒绝
-- shell 文本不会被执行
-- Job 状态正确回写
+取消使用同一个固定 runner 的 `--cancel` 模式，不暴露任意远程命令。

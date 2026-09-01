@@ -1,7 +1,5 @@
 # GeoMCP 开发计划
 
-本目录保存 GeoMCP 的分步开发计划。每一步独立成文档，建议严格按编号推进。
-
 ## 当前实现状态
 
 - [x] Step 01 — Project Core
@@ -9,16 +7,18 @@
 - [x] Step 03 — Python API
 - [x] Step 04 — CLI
 - [x] Step 05 — MCP
-- [ ] Step 06 — Job Manager
-- [ ] Step 07 — CPU Executor
-- [ ] Step 08 — GPU Executor
-- [ ] Step 09 — GPU Worker
-- [ ] Step 10 — DAS Basic
+- [x] Step 06 — Job Manager
+- [x] Step 07 — CPU Executor
+- [x] Step 08 — GPU Executor
+- [x] Step 09 — GPU Worker
+- [x] Step 10 — DAS Basic
 - [ ] Step 11 — RAG
 - [ ] Step 12 — Research Memory
 - [ ] Step 13 — DAS Advanced
 - [ ] Step 14 — Catalog / HypoDD / NLLoc / MatchLocate
 - [ ] Step 15 — 集成验收与发布
+
+当前达到 `v0.1` 目标：Step 01–10。
 
 ## 使用文档
 
@@ -52,24 +52,3 @@ v0.3 = Step 12–13
 v0.4 = Step 14
 Release Gate = Step 15
 ```
-
-## 总体原则
-
-```text
-Codex负责思考
-Skills负责指导
-MCP负责Agent接口
-CLI负责人工接口
-Python API负责程序接口
-Scientific Core负责算法
-Job Manager负责任务生命周期
-Executor负责计算节点选择
-Worker负责真正执行
-1012负责控制
-1015负责GPU计算
-RAG负责外部知识
-Research Memory负责内部经验
-Permission负责安全边界
-```
-
-不要先开发大量科研算法，再补权限、接口和任务系统。
