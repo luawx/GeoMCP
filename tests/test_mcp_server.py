@@ -17,13 +17,14 @@ def write_config(config_dir: Path, root: Path) -> None:
         "paths.yaml": f"read_roots:\n  - {root}\nwrite_roots:\n  - {out}\n",
         "permissions.yaml": (
             "default_policy: deny\n"
-            "allowed_capabilities: [filesystem.inspect, filesystem.read, filesystem.write, system.status, "
+            "allowed_capabilities: [filesystem.inspect, filesystem.read, filesystem.write, system.status, workspace.list, "
             "job.list, job.status, job.result, job.logs, job.cancel, job.submit_healthcheck, "
             "das.inspect, das.read, das.process, das.plot]\n"
             "denied_capabilities: [delete, recursive_delete, arbitrary_shell, arbitrary_ssh]\n"
         ),
         "executors.yaml": "default_executor: cpu\ncpu:\n  node: '1012'\n",
         "rag.yaml": "enabled: false\n",
+        "workspaces.yaml": f"workspaces:\n  test:\n    read_root: {root}\n    write_root: {out}\n",
     }
     for name, text in files.items():
         (config_dir / name).write_text(text, encoding="utf-8")
@@ -42,6 +43,7 @@ def test_mcp_server_lists_and_calls_registry_tools(tmp_path: Path):
             assert [tool.name for tool in tools.tools] == [
                 "system.status",
                 "filesystem.inspect",
+                "workspace.list",
                 "job.list",
                 "job.status",
                 "job.result",
@@ -53,6 +55,10 @@ def test_mcp_server_lists_and_calls_registry_tools(tmp_path: Path):
                 "das.rms",
                 "das.plot",
             ]
+
+            workspace_result = await client.call_tool("workspace.list", {})
+            assert workspace_result.is_error is False
+            assert workspace_result.structured_content["data"][0]["name"] == "test"
 
             result = await client.call_tool("filesystem.inspect", {"path": str(sample)})
             assert result.is_error is False

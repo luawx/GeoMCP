@@ -68,6 +68,35 @@ write_roots:
 
 不要把 `/`、整个 `/cluster` 或其他用户目录加入 write roots。
 
+### Workspace / Data Region
+
+`workspaces.yaml` 是可选配置；旧部署没有该文件仍可运行，但不会有命名 Workspace。推荐新部署配置：
+
+```yaml
+workspaces:
+  geomcp:
+    description: Default GeoMCP research workspace
+    read_root: /cluster/datapool2/xuxy
+    write_root: /cluster/datapool2/xuxy/GeoMCP/outputs
+```
+
+如果要让 Agent 写入项目自己的目录，例如：
+
+```text
+/cluster/datapool2/xuxy/DAS/2021Guangzhou/processed
+```
+
+必须先把它加入 `paths.yaml -> write_roots`，再增加：
+
+```yaml
+workspaces:
+  guangzhou_das:
+    read_root: /cluster/datapool2/xuxy/DAS/2021Guangzhou
+    write_root: /cluster/datapool2/xuxy/DAS/2021Guangzhou/processed
+```
+
+Workspace 不能扩大全局路径权限。
+
 验证：
 
 ```bash
@@ -128,4 +157,4 @@ Codex 只是通过 SSH 启动固定 MCP stdio 入口；GeoMCP 本身不暴露任
 pytest -q
 ```
 
-然后从 MCP 客户端确认至少发现 system/filesystem/job/das 工具，并确认越权路径、`../`、符号链接逃逸、任意 shell/SSH 均不可用。
+然后从 MCP 客户端确认至少发现 system/filesystem/workspace/job/das 工具，并确认越权路径、`../`、符号链接逃逸、任意 shell/SSH 均不可用。

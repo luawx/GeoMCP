@@ -50,7 +50,7 @@ CLI / Python API / MCP
 | 层 | 主要职责 | 不应该做的事 |
 |---|---|---|
 | Scientific Core | 科学算法、参数合法性、第三方库调用 | 不决定服务器权限，不直接暴露给 Agent |
-| Service | capability 检查、读写路径检查、默认输出目录、业务边界 | 不绕过 PathPolicy |
+| Service | capability 检查、Workspace/读写路径检查、默认输出目录、业务边界 | 不绕过 PathPolicy |
 | API | 把异常转换成统一 `ApiResult` | 不复制科学算法 |
 | CLI | 人工命令行入口 | 不直接调用 Scientific Core |
 | MCP | Agent 工具定义、JSON Schema、上下文压缩 | 不暴露 config_dir / SSH / 任意 command |
@@ -183,6 +183,8 @@ tests/
 
 config/
 ├── permissions.yaml
+├── paths.yaml
+├── workspaces.yaml        # 可选；Agent 命名科研区域
 ├── geomcp.yaml            # 工具运行限制
 └── executors.yaml         # 仅 Executor 相关配置
 ```
@@ -242,6 +244,20 @@ def run(path, *, parameter: float):
 
 Service 是整个安全边界的核心。
 
+如果工具允许 Agent 指定项目级输入/输出区域，应复用 `WorkspaceManager`，不要自己拼路径。规则是：
+
+```text
+workspace + relative path
+↓
+WorkspaceManager
+↓
+PathPolicy
+↓
+Scientific Core / JobManager
+```
+
+Workspace 只能缩小全局 `read_roots/write_roots`，不能扩大它。
+
 典型结构：
 
 ```python
@@ -265,9 +281,10 @@ class ExampleService:
 如果产生文件：
 
 1. 默认输出到 GeoMCP `outputs/`；
-2. 用户指定输出路径时仍必须 `validate_write()`；
-3. 不覆盖 read-only 原始数据；
-4. 不提供 delete。
+2. 使用 Workspace 时，输入/输出必须经过 `WorkspaceManager.resolve_read/resolve_write()`；
+3. 用户指定绝对输出路径时仍必须 `validate_write()`；
+4. 不覆盖 read-only 原始数据；
+5. 不提供 delete。
 
 ### capability
 
@@ -386,6 +403,20 @@ reg(
     ["path", "parameter"],
 )
 ```
+
+### Workspace 参数
+
+对于需要项目级输入/输出的工具，可以加入可选：
+
+```json
+{
+  "workspace": "guangzhou_das",
+  "path": "raw/event001.h5",
+  "output_path": "event001/result.dat"
+}
+```
+
+有 `workspace` 时路径必须是相对路径；无 `workspace` 时可保留旧的绝对路径 API 以兼容人工脚本。
 
 ### MCP 的特殊限制
 
@@ -643,8 +674,9 @@ Skill 只负责教 Agent 如何正确使用工具，不负责实现权限。真�
 提交 PR 前逐项确认：
 
 - [ ] Scientific Core 与 Service 已分层；
-- [ ] 所有输入路径经过 `validate_read()`；
-- [ ] 所有输出路径经过 `validate_write()`；
+- [ ] 所有输入路径经过 `validate_read()`，或 WorkspaceManager 后再进入 PathPolicy；
+- [ ] 所有输出路径经过 `validate_write()`，或 WorkspaceManager 后再进入 PathPolicy；
+- [ ] Workspace 不能扩大全局 read/write roots；
 - [ ] 新 capability 已显式加入权限配置；
 - [ ] 没有 delete / arbitrary shell / arbitrary SSH；
 - [ ] MCP 没有暴露服务器配置参数；

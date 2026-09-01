@@ -39,7 +39,7 @@ docs/
 - paths.yaml
 - permissions.yaml
 - executors.yaml
-- rag.yaml
+- rag.yaml\n- workspaces.yaml
 
 定义统一异常，例如：
 

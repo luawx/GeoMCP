@@ -5,6 +5,7 @@ allowed_capabilities:
   - filesystem.inspect
   - filesystem.read
   - filesystem.write
+  - workspace.list
   - job.list
   - job.status
   - job.result

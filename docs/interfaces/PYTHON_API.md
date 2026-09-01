@@ -60,3 +60,24 @@ delete()
 ## 验收
 
 Python 中能够直接调用 system / filesystem 基础能力，并且所有路径仍经过 Permission / Path Sandbox。
+
+
+## Workspace / Data Region
+
+新增：
+
+```python
+from geomcp.api import workspace, das
+
+regions = workspace.list_workspaces()
+
+result = das.bandpass(
+    "raw/event001.h5",
+    workspace="guangzhou_das",
+    freqmin=1,
+    freqmax=20,
+    output_path="event001/filter.npy",
+)
+```
+
+当 `workspace` 不为空时，DAS 输入/输出路径必须是相对路径，并由 Service 层的 WorkspaceManager + PathPolicy 双重校验。Python API 仍保留原有绝对路径模式以兼容人工脚本。

@@ -4,7 +4,7 @@ import argparse, json, sys
 from pathlib import Path
 from typing import Sequence
 import yaml
-from geomcp.api import das as das_api, filesystem as filesystem_api, jobs as jobs_api, system as system_api
+from geomcp.api import das as das_api, filesystem as filesystem_api, jobs as jobs_api, system as system_api, workspace as workspace_api
 from geomcp.models import ApiResult
 
 def _add_window(p):
@@ -12,6 +12,9 @@ def _add_window(p):
     p.add_argument("--channel-stop", type=int, default=None)
     p.add_argument("--sample-start", type=int, default=0)
     p.add_argument("--sample-stop", type=int, default=None)
+
+def _add_workspace(p):
+    p.add_argument("--workspace", default=None, help="Interpret DAS paths relative to a configured workspace")
 
 def _parser():
     parser = argparse.ArgumentParser(prog="geomcp", description="GeoMCP research service CLI")
@@ -32,6 +35,10 @@ def _parser():
     fsi = fs.add_parser("inspect")
     fsi.add_argument("path")
 
+    workspace = sub.add_parser("workspace")
+    ws = workspace.add_subparsers(dest="command", required=True)
+    ws.add_parser("list")
+
     job = sub.add_parser("job")
     js = job.add_subparsers(dest="command", required=True)
     jl = js.add_parser("list")
@@ -47,22 +54,27 @@ def _parser():
     ds = das.add_subparsers(dest="command", required=True)
     di = ds.add_parser("inspect")
     di.add_argument("path")
+    _add_workspace(di)
     dr = ds.add_parser("read-window")
     dr.add_argument("path")
+    _add_workspace(dr)
     _add_window(dr)
     db = ds.add_parser("bandpass")
     db.add_argument("path")
     db.add_argument("freqmin", type=float)
     db.add_argument("freqmax", type=float)
     db.add_argument("--output-path", default=None)
+    _add_workspace(db)
     _add_window(db)
     dm = ds.add_parser("rms")
     dm.add_argument("path")
+    _add_workspace(dm)
     _add_window(dm)
     dp = ds.add_parser("plot")
     dp.add_argument("path")
     dp.add_argument("--output-path", default=None)
     dp.add_argument("--dpi", type=int, default=150)
+    _add_workspace(dp)
     _add_window(dp)
     return parser
 
@@ -96,6 +108,8 @@ def main(argv: Sequence[str] | None=None) -> int:
         result = system_api.validate(cd)
     elif args.group == "filesystem":
         result = filesystem_api.inspect(args.path, config_dir=cd)
+    elif args.group == "workspace":
+        result = workspace_api.list_workspaces(config_dir=cd)
     elif args.group == "job" and args.command == "list":
         result = jobs_api.list_jobs(limit=args.limit, status=args.status, config_dir=cd)
     elif args.group == "job" and args.command == "healthcheck":
@@ -109,25 +123,27 @@ def main(argv: Sequence[str] | None=None) -> int:
     elif args.group == "job" and args.command == "cancel":
         result = jobs_api.cancel(args.job_id, config_dir=cd)
     elif args.group == "das" and args.command == "inspect":
-        result = das_api.inspect(args.path, config_dir=cd)
+        result = das_api.inspect(args.path, workspace=args.workspace, config_dir=cd)
     elif args.group == "das" and args.command == "read-window":
-        result = das_api.read_window(args.path, config_dir=cd, **_window(args))
+        result = das_api.read_window(args.path, workspace=args.workspace, config_dir=cd, **_window(args))
     elif args.group == "das" and args.command == "bandpass":
         result = das_api.bandpass(
             args.path,
             freqmin=args.freqmin,
             freqmax=args.freqmax,
             output_path=args.output_path,
+            workspace=args.workspace,
             config_dir=cd,
             **_window(args),
         )
     elif args.group == "das" and args.command == "rms":
-        result = das_api.rms(args.path, config_dir=cd, **_window(args))
+        result = das_api.rms(args.path, workspace=args.workspace, config_dir=cd, **_window(args))
     elif args.group == "das" and args.command == "plot":
         result = das_api.plot(
             args.path,
             output_path=args.output_path,
             dpi=args.dpi,
+            workspace=args.workspace,
             config_dir=cd,
             **_window(args),
         )

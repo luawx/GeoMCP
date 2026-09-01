@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
-from geomcp.api import das as das_api, filesystem as filesystem_api, jobs as jobs_api, system as system_api
+from geomcp.api import das as das_api, filesystem as filesystem_api, jobs as jobs_api, system as system_api, workspace as workspace_api
 
 ToolHandler = Callable[..., dict[str, Any]]
 
@@ -85,6 +85,9 @@ def build_registry(config_dir: str | Path | None=None) -> ToolRegistry:
     def filesystem_inspect(path: str) -> dict[str, Any]:
         return filesystem_api.inspect(path, config_dir=fixed_config).to_dict()
 
+    def workspace_list() -> dict[str, Any]:
+        return workspace_api.list_workspaces(config_dir=fixed_config).to_dict()
+
     def job_list(limit: int=100, status: str | None=None) -> dict[str, Any]:
         return jobs_api.list_jobs(limit=limit, status=status, config_dir=fixed_config).to_dict()
 
@@ -100,8 +103,8 @@ def build_registry(config_dir: str | Path | None=None) -> ToolRegistry:
     def job_submit_healthcheck(executor: str="cpu") -> dict[str, Any]:
         return jobs_api.submit_healthcheck(executor=executor, config_dir=fixed_config).to_dict()
 
-    def das_inspect(path: str) -> dict[str, Any]:
-        return das_api.inspect(path, config_dir=fixed_config).to_dict()
+    def das_inspect(path: str, workspace: str | None=None) -> dict[str, Any]:
+        return das_api.inspect(path, workspace=workspace, config_dir=fixed_config).to_dict()
 
     def das_read_window(
         path: str,
@@ -109,6 +112,7 @@ def build_registry(config_dir: str | Path | None=None) -> ToolRegistry:
         channel_stop: int | None=None,
         sample_start: int=0,
         sample_stop: int | None=None,
+        workspace: str | None=None,
     ) -> dict[str, Any]:
         result = das_api.read_window(
             path,
@@ -116,6 +120,7 @@ def build_registry(config_dir: str | Path | None=None) -> ToolRegistry:
             channel_stop=channel_stop,
             sample_start=sample_start,
             sample_stop=sample_stop,
+            workspace=workspace,
             config_dir=fixed_config,
         ).to_dict()
         return _compact_window(result)
@@ -129,6 +134,7 @@ def build_registry(config_dir: str | Path | None=None) -> ToolRegistry:
         sample_start: int=0,
         sample_stop: int | None=None,
         output_path: str | None=None,
+        workspace: str | None=None,
     ) -> dict[str, Any]:
         return das_api.bandpass(
             path,
@@ -139,6 +145,7 @@ def build_registry(config_dir: str | Path | None=None) -> ToolRegistry:
             sample_start=sample_start,
             sample_stop=sample_stop,
             output_path=output_path,
+            workspace=workspace,
             config_dir=fixed_config,
         ).to_dict()
 
@@ -148,6 +155,7 @@ def build_registry(config_dir: str | Path | None=None) -> ToolRegistry:
         channel_stop: int | None=None,
         sample_start: int=0,
         sample_stop: int | None=None,
+        workspace: str | None=None,
     ) -> dict[str, Any]:
         return das_api.rms(
             path,
@@ -155,6 +163,7 @@ def build_registry(config_dir: str | Path | None=None) -> ToolRegistry:
             channel_stop=channel_stop,
             sample_start=sample_start,
             sample_stop=sample_stop,
+            workspace=workspace,
             config_dir=fixed_config,
         ).to_dict()
 
@@ -166,6 +175,7 @@ def build_registry(config_dir: str | Path | None=None) -> ToolRegistry:
         sample_stop: int | None=None,
         output_path: str | None=None,
         dpi: int=150,
+        workspace: str | None=None,
     ) -> dict[str, Any]:
         return das_api.plot(
             path,
@@ -175,6 +185,7 @@ def build_registry(config_dir: str | Path | None=None) -> ToolRegistry:
             sample_stop=sample_stop,
             output_path=output_path,
             dpi=dpi,
+            workspace=workspace,
             config_dir=fixed_config,
         ).to_dict()
 
@@ -185,6 +196,11 @@ def build_registry(config_dir: str | Path | None=None) -> ToolRegistry:
         filesystem_inspect,
         {"path": {"type": "string"}},
         ["path"],
+    )
+    reg(
+        "workspace.list",
+        "List configured Workspace/Data Regions that the Agent may use for workspace-relative input and output paths.",
+        workspace_list,
     )
     reg(
         "job.list",
@@ -221,6 +237,7 @@ def build_registry(config_dir: str | Path | None=None) -> ToolRegistry:
     )
     window = {
         "path": {"type": "string"},
+        "workspace": {"type": ["string", "null"]},
         "channel_start": {"type": ["integer", "null"]},
         "channel_stop": {"type": ["integer", "null"]},
         "sample_start": {"type": "integer"},
@@ -228,21 +245,21 @@ def build_registry(config_dir: str | Path | None=None) -> ToolRegistry:
     }
     reg(
         "das.inspect",
-        "Inspect DAS metadata with DASPy after path checks.",
+        "Inspect DAS metadata after path checks. If workspace is set, path must be relative to that workspace read root.",
         das_inspect,
-        {"path": {"type": "string"}},
+        {"path": {"type": "string"}, "workspace": {"type": ["string", "null"]}},
         ["path"],
     )
     reg(
         "das.read_window",
-        "Read a bounded DAS window and return metadata plus a compact preview; full arrays are not injected into MCP context.",
+        "Read a bounded DAS window and return metadata plus a compact preview. Workspace paths are relative and sandboxed.",
         das_read_window,
         window,
         ["path"],
     )
     reg(
         "das.bandpass",
-        "Band-pass a bounded DAS window after Nyquist validation and save to outputs.",
+        "Band-pass a bounded DAS window. With workspace set, input/output paths are relative to its read/write roots.",
         das_bandpass,
         {
             **window,
@@ -255,7 +272,7 @@ def build_registry(config_dir: str | Path | None=None) -> ToolRegistry:
     reg("das.rms", "Compute per-channel RMS for a bounded DAS window.", das_rms, window, ["path"])
     reg(
         "das.plot",
-        "Render a bounded DAS waveform window to an allowed output path.",
+        "Render a bounded DAS waveform window. With workspace set, output_path is relative to its write root.",
         das_plot,
         {
             **window,
