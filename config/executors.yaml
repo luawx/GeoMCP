@@ -3,6 +3,7 @@ cpu:
   node: "1012"
   max_workers: 4
   timeout: 300
+  dispatch_timeout: 10
   memory_soft_limit_mb: 8192
 gpu:
   node: "1015"
@@ -13,3 +14,4 @@ gpu:
   python: "python"
   config_dir: /cluster/datapool2/xuxy/GeoMCP/config
   ssh_executable: ssh
+  dispatch_timeout: 30
