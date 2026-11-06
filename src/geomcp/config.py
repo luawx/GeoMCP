@@ -12,7 +12,7 @@ from .exceptions import ConfigurationError
 
 
 CONFIG_FILES = ("geomcp.yaml", "paths.yaml", "permissions.yaml", "executors.yaml", "rag.yaml")
-OPTIONAL_CONFIG_FILES = ("workspaces.yaml",)
+OPTIONAL_CONFIG_FILES = ("workspaces.yaml", "picking.yaml")
 
 
 def find_project_root(start: str | Path | None = None) -> Path:

@@ -1,0 +1,12 @@
+# Candidate CPU environment, Python 3.11. Not a validated transitive lock.
+# Official EQNet requirements do not pin torch/torchvision.
+torch==2.5.1
+torchvision==0.20.1
+numpy==1.26.4
+scipy==1.11.4
+h5py==3.11.0
+matplotlib==3.9.2
+pandas==2.2.3
+tqdm==4.67.1
+fsspec==2024.10.0
+obspy==1.4.2

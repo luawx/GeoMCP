@@ -16,6 +16,9 @@ allowed_capabilities:
   - das.read
   - das.process
   - das.plot
+  - picking.read
+  - picking.prepare
+  - picking.run
 denied_capabilities:
   - delete
   - recursive_delete

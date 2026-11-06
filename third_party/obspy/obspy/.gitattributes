@@ -1,0 +1,2 @@
+# GeoMCP override of parent upstream text=auto; preserve PROVENANCE bytes.
+* -text -whitespace conflict-marker-size=32

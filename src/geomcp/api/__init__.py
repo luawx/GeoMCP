@@ -1,5 +1,5 @@
 """Programmatic GeoMCP API."""
-from . import das, jobs, workspace
+from . import das, jobs, workspace, picking
 from .filesystem import inspect
 from .system import config_snapshot, status, validate
-__all__=["status","validate","config_snapshot","inspect","jobs","das","workspace"]
+__all__=["status","validate","config_snapshot","inspect","jobs","das","workspace","picking"]

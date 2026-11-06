@@ -1,0 +1,2 @@
+# Keep pinned upstream snapshots byte-for-byte; retain upstream whitespace.
+third_party/** -text -whitespace conflict-marker-size=32

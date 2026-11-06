@@ -95,3 +95,33 @@ MCP 输入不能包含：
 5. Workspace 绝对路径和路径逃逸被拒绝。
 
 这样后续新增工具只修改 Registry 和对应 API/Service，不需要同步修改 Server 工具列表。
+
+
+## Picking offline workflow
+
+Picking now shares the Python/CLI/MCP service, workspace/path checks and Job Manager.
+Install optional readers with `pip install -e ".[picking]"`. Administrators must
+explicitly register picking.yaml, versioned presets, fixed model environments and
+hard resource limits. Missing configuration disables picking without blocking base
+services. Models/weights are never downloaded automatically.
+
+Discover picking.backends/presets, inspect waveform/geometry inputs, prepare a frozen
+configuration, validate it, then submit picking.run. Follow job.status/job.cancel
+and retrieve picking.result artifact references. Input/config changes require a new
+prepare. Preview default is 20, maximum 100; interface responses are capped at 64 KiB.
+STA/LTA emits unknown triggers, which are not P/S observations for location.
+Implementation and synthetic fixtures do not establish scientific acceptance: real
+data precision/recall, false alarms, throughput and memory benchmarks remain needed.
+
+Registered tools: picking.backends, picking.presets, picking.inspect,
+picking.prepare, picking.validate, picking.run, picking.result, picking.import.
+Schemas reject unknown fields including nested overrides. Config is fixed at server
+startup; no caller config_dir, executable, model path, task type or executor.
+Prepare requires waveform_manifest_ref, geometry_ref, preset_id, preset_version;
+optional overrides/workspace/output_path. Run/validate require prepared_ref and
+optional workspace. Result takes job_id and optional preview_limit. Import takes
+input_ref, geometry_ref, format=external_csv and optional mapping/workspace/output_path.
+Mapping supports columns (canonical PickTable to source CSV columns), phase_map
+(source label to P/S/unknown), missing_phase=unknown, score_type and waveform_id.
+Capabilities are picking.read, picking.prepare and picking.run; default deny and
+explicit denials remain effective.

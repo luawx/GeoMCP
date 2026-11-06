@@ -156,3 +156,31 @@ das.plot
 ```
 
 MCP、CLI、Python API 复用同一 Service / Permission / Scientific Core。MCP 的配置目录在服务器启动时固定，工具参数中不暴露 `config_dir`。
+
+
+## Picking offline workflow
+
+Picking now shares the Python/CLI/MCP service, workspace/path checks and Job Manager.
+Install optional readers with `pip install -e ".[picking]"`. Administrators must
+explicitly register picking.yaml, versioned presets, fixed model environments and
+hard resource limits. Missing configuration disables picking without blocking base
+services. Models/weights are never downloaded automatically.
+
+Discover picking.backends/presets, inspect waveform/geometry inputs, prepare a frozen
+configuration, validate it, then submit picking.run. Follow job.status/job.cancel
+and retrieve picking.result artifact references. Input/config changes require a new
+prepare. Preview default is 20, maximum 100; interface responses are capped at 64 KiB.
+STA/LTA emits unknown triggers, which are not P/S observations for location.
+Implementation and synthetic fixtures do not establish scientific acceptance: real
+data precision/recall, false alarms, throughput and memory benchmarks remain needed.
+
+本地合成示例（目标目录不能已存在）：
+
+```powershell
+.\.venv\Scripts\python.exe scripts/picking_demo.py --output-dir outputs/picking-demo --run
+```
+
+脚本生成独立配置、miniSEED/HDF5 和几何，通过真实后台 Job 运行 STA/LTA。
+正式使用先启用 `config/picking.yaml` 中经过验证的执行配置；外部 CSV 导入需启用
+`import-cpu`。深度模型需另登记权重及隔离 Python 环境，参考
+[源码与环境说明](../../third_party/README.md)。当前不执行采样率转换，须提供兼容采样率输入。

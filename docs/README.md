@@ -7,6 +7,8 @@ GeoMCP 文档按“使用、架构、接口、科学工具、开发、部署”�
 | 目标 | 文档 |
 |---|---|
 | 安装并使用 GeoMCP | [基础使用指南](getting-started/USAGE.md) |
+| 开发地震定位流程 | [定位流程需求文档](scientific/LOCATION_WORKFLOW_REQUIREMENTS.md) |
+| 开发拾取模块 | [拾取模块开发文档](scientific/PICKING_MODULE_DEVELOPMENT.md)（含实现状态与验收边界） |
 | 开发一个新的科学工具 | [新增工具开发指南](development/TOOL_DEVELOPMENT.md) |
 | 查看当前开发进度 | [开发路线图](development/ROADMAP.md) |
 | 理解整体架构与安全边界 | [Project Core](architecture/PROJECT_CORE.md) / [Permission & Sandbox](architecture/PERMISSION_PATH_SANDBOX.md) / [Workspace](architecture/WORKSPACES.md) |
@@ -33,6 +35,8 @@ docs/
 │   └── MCP.md
 ├── scientific/
 │   ├── DAS_BASIC.md
+│   ├── LOCATION_WORKFLOW_REQUIREMENTS.md
+│   ├── PICKING_MODULE_DEVELOPMENT.md
 │   ├── DAS_ADVANCED.md
 │   ├── RAG.md
 │   ├── RESEARCH_MEMORY.md

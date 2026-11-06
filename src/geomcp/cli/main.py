@@ -4,7 +4,7 @@ import argparse, json, sys
 from pathlib import Path
 from typing import Sequence
 import yaml
-from geomcp.api import das as das_api, filesystem as filesystem_api, jobs as jobs_api, system as system_api, workspace as workspace_api
+from geomcp.api import das as das_api, filesystem as filesystem_api, jobs as jobs_api, system as system_api, workspace as workspace_api, picking as picking_api
 from geomcp.models import ApiResult
 
 def _add_window(p):
@@ -76,6 +76,26 @@ def _parser():
     dp.add_argument("--dpi", type=int, default=150)
     _add_workspace(dp)
     _add_window(dp)
+    picking = sub.add_parser("picking")
+    ps = picking.add_subparsers(dest="command", required=True)
+    ps.add_parser("backends")
+    pp = ps.add_parser("presets")
+    pp.add_argument("--backend-id", default=None)
+    pi = ps.add_parser("inspect")
+    pi.add_argument("waveform_manifest_ref")
+    pi.add_argument("--geometry-ref", default=None)
+    pi.add_argument("--preview-limit", type=int, default=20)
+    _add_workspace(pi)
+    for name in ("prepare", "import"):
+        pp = ps.add_parser(name)
+        pp.add_argument("--request", required=True, help="JSON object with API arguments")
+    for name in ("validate", "run"):
+        pp = ps.add_parser(name)
+        pp.add_argument("prepared_ref")
+        _add_workspace(pp)
+    pp = ps.add_parser("result")
+    pp.add_argument("job_id")
+    pp.add_argument("--preview-limit", type=int, default=20)
     return parser
 
 def _render(result: ApiResult, *, as_json: bool):
@@ -100,7 +120,23 @@ def main(argv: Sequence[str] | None=None) -> int:
     args = _parser().parse_args(raw)
     cd = args.config_dir
 
-    if args.group == "system":
+    if args.group == "picking":
+        from geomcp.mcp.registry import build_registry
+        if args.command in ("prepare", "import"):
+            try:
+                payload = json.loads(args.request)
+                if not isinstance(payload, dict):
+                    raise ValueError("request must be a JSON object")
+            except (ValueError, TypeError) as exc:
+                from geomcp.models import fail
+                result = fail("INVALID_ARGUMENT", str(exc))
+                _render(result, as_json=as_json)
+                return 2
+        else:
+            payload = {k: v for k, v in vars(args).items() if k not in {"group", "command", "config_dir"}}
+        response = build_registry(cd).get("picking." + args.command).handler(**payload)
+        result = ApiResult(**response)
+    elif args.group == "system":
         result = system_api.status(cd)
     elif args.group == "config" and args.command == "show":
         result = system_api.config_snapshot(cd)

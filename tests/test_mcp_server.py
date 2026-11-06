@@ -54,6 +54,8 @@ def test_mcp_server_lists_and_calls_registry_tools(tmp_path: Path):
                 "das.bandpass",
                 "das.rms",
                 "das.plot",
+        "picking.backends", "picking.presets", "picking.inspect", "picking.prepare",
+        "picking.validate", "picking.run", "picking.result", "picking.import",
             ]
 
             workspace_result = await client.call_tool("workspace.list", {})

@@ -12,7 +12,8 @@
 - [x] Step 08 — GPU Executor
 - [x] Step 09 — GPU Worker
 - [x] Step 10 — DAS Basic
-- [x] Step 10.1 — v0.1 Hardening / Release Gate\n- [x] Workspace / Data Region — Agent-controlled safe I/O regions
+- [x] Step 10.1 — v0.1 Hardening / Release Gate
+- [x] Workspace / Data Region — Agent-controlled safe I/O regions
 - [ ] Step 11 — RAG
 - [ ] Step 12 — Research Memory
 - [ ] Step 13 — DAS Advanced
@@ -55,3 +56,18 @@ v0.3 = Step 12–13
 v0.4 = Step 14
 Release Gate = Step 15
 ```
+
+
+## 定位流程支线：拾取模块（2026-11-06）
+
+本支线不更改既有版本编号，不将后续关联、定位或科学质量验收标记为完成。
+
+- [x] 三类官方源码固定版本、来源校验和及许可证整理。
+- [x] 参数预设/覆盖、输入契约、统一产物、Python/CLI/MCP 与 Job 集成。
+- [x] STA/LTA 台站和 DAS 合成任务、跨块状态及外部 CSV 导入。
+- [x] PhaseNet/PhaseNet-DAS 固定程序适配、模型登记与环境模板。
+- [x] 回归测试、权限/篡改检查和原生输出保留测试。
+- [ ] 深度学习真实权重与隔离环境登记、原生推理对照。
+- [ ] 人工标注/独立噪声评价、科学门槛、资源及 CPU/GPU 基准。
+
+当前验收记录与限制见[拾取模块开发文档](../scientific/PICKING_MODULE_DEVELOPMENT.md#0-当前实现与验证边界)；运行步骤见[使用指南](../getting-started/USAGE.md)。

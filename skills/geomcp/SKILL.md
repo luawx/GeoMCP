@@ -26,3 +26,14 @@ Use GeoMCP as the server-side research interface when a registered GeoMCP tool e
 Workspace discovery tool: `workspace.list`.
 
 Current DAS Basic tools: `das.inspect`, `das.read_window`, `das.bandpass`, `das.rms`, `das.plot`. Advanced FK/beamforming/denoising belongs to later steps.
+
+## Picking workflow
+
+Discover workspace.list, picking.backends and picking.presets. Inspect inputs,
+prepare the exact preset version, validate the returned prepared_ref, then run.
+Use job.status/job.cancel and picking.result for lifecycle and artifact references.
+Use picking.import for external CSV with explicit column/phase mappings.
+Never pass commands, config_dir, model paths or executor selection. Never map
+unknown to P/S implicitly. Previews default to 20 and cannot exceed 100. Model
+weights are not downloaded. Real-data benchmarks remain required for scientific
+acceptance even when interfaces and synthetic tests pass.

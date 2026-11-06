@@ -15,6 +15,7 @@ Local CPU Executor
 Fixed-endpoint Remote GPU Executor
 GPU Worker Registry
 DAS Basic (DASPy)
+Picking (STA/LTA + registered PhaseNet / PhaseNet-DAS adapters)
 ```
 
 当前 MCP 工具：
@@ -33,6 +34,14 @@ das.read_window
 das.bandpass
 das.rms
 das.plot
+picking.backends
+picking.presets
+picking.inspect
+picking.prepare
+picking.validate
+picking.run
+picking.result
+picking.import
 ```
 
 ## v0.1 封板状态
@@ -63,10 +72,10 @@ DASPy 支持：
 python -m pip install -e ".[das]"
 ```
 
-开发与完整 v0.1：
+开发与拾取模块回归：
 
 ```bash
-python -m pip install -e ".[test,mcp,das]"
+python -m pip install -e ".[test,mcp,das,picking]"
 pytest -q
 ```
 
@@ -91,3 +100,26 @@ pytest -q
 - [新增工具开发指南](docs/development/TOOL_DEVELOPMENT.md)
 - [开发路线图](docs/development/ROADMAP.md)
 - [离线服务器部署](docs/deployment/OFFLINE_SERVER_DEPLOYMENT.md)
+
+
+## 离线拾取模块
+
+已接入统一 Python/CLI/MCP、参数预设与覆盖、权限检查、Job 执行、规范 CSV/JSON 输出及外部拾取导入。STA/LTA 输出 unknown 触发，不能直接当作 P/S 到时用于定位。
+
+| 后端 | 当前工程状态 | 验收边界 |
+|---|---|---|
+| STA/LTA | miniSEED / DAS HDF5 可运行，支持跨块状态 | 合成后台 Job 已验证，真实数据阈值与质量仍需评测 |
+| PhaseNet | 固定源码、模型登记和隔离环境适配已实现 | 需登记真实权重、验证环境和原生推理结果 |
+| PhaseNet-DAS | 固定源码、时间/空间分块和适配已实现 | 需登记真实权重、验证环境和原生推理结果 |
+
+安装读取依赖：`python -m pip install -e ".[picking]"`。管理员在 `config/picking.yaml` 显式启用执行配置、资源上限及模型；默认关闭，不自动下载权重。先发现 backends/presets，再 inspect、prepare、validate、run，最后通过 result 获取摘要与产物引用；输入或配置改变后重新 prepare。
+
+合成示例（目标目录必须未占用）：
+
+```powershell
+.\.venv\Scripts\python.exe scripts/picking_demo.py --output-dir outputs/picking-demo --run
+```
+
+示例通过真实后台任务验证台站拾取、DAS 拾取和外部 CSV 导入。预览默认 20 行、最多 100 行，MCP 响应上限 64 KiB。真实数据精度、吞吐及显存基准尚未验收。
+
+详见[拾取开发与实现状态](docs/scientific/PICKING_MODULE_DEVELOPMENT.md)、[源码来源与环境说明](third_party/README.md)和[使用指南](docs/getting-started/USAGE.md)。

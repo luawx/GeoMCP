@@ -46,4 +46,32 @@ def build_task_registry() -> TaskRegistry:
     r.register(TaskDefinition("cpu.healthcheck","cpu",_healthcheck,30.0,_no_args))
     r.register(TaskDefinition("cpu.delay","cpu",_delay,1.0,_delay_args))
     r.register(TaskDefinition("gpu.healthcheck","gpu",_healthcheck,30.0,_no_args))
+    for name in ("stalta.cpu", "phasenet.cpu", "phasenet.gpu", "phasenet_das.cpu", "phasenet_das.gpu", "import.cpu"):
+        task_name = "picking." + name
+        r.register(TaskDefinition(task_name, name.rsplit(".", 1)[1], _picking_handler(task_name), 3600.0, _picking_validator(task_name)))
     return r
+
+
+def _picking_handler(task_name):
+    def handler(input_data, parameters):
+        from geomcp.services.picking import execute_worker
+        return execute_worker(input_data, parameters, task_type=task_name)
+    return handler
+
+
+
+def _picking_validator(task_name):
+    def validate(input_data, parameters):
+        if parameters:
+            raise WorkerError('Picking tasks accept no parameter overrides')
+        fields = {'config_dir', 'prepared_ref', 'workspace'}
+        if task_name == 'picking.import.cpu':
+            fields = {'config_dir', 'input_path', 'geometry_path', 'output_dir', 'workspace', 'mapping', 'fingerprint', 'references'}
+        if set(input_data) != fields:
+            raise WorkerError('Picking task input fields do not match registered schema')
+        for name in fields - {'workspace', 'mapping', 'references'}:
+            if not isinstance(input_data[name], str) or not input_data[name]:
+                raise WorkerError('Picking task string field is invalid: ' + name)
+        if input_data['workspace'] is not None and not isinstance(input_data['workspace'], str):
+            raise WorkerError('Invalid picking workspace')
+    return validate

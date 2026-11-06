@@ -20,7 +20,30 @@ def create_server(
     except ImportError as exc:
         raise RuntimeError('MCP support is not installed. Install GeoMCP with the "mcp" extra.') from exc
 
-    server = MCPServer(
+    active_registry = registry or build_registry(config_dir=config_dir)
+
+    class RegisteredServer(MCPServer):
+        async def list_tools(self):
+            from mcp.types import Tool
+            tools = await super().list_tools()
+            tools.extend(Tool(name=d.name, description=d.description,
+                input_schema=d.input_schema, output_schema=d.output_schema)
+                for d in active_registry.list() if d.name.startswith("picking."))
+            return tools
+
+        async def call_tool(self, name, arguments, context=None):
+            if name.startswith("picking."):
+                import json
+                import anyio
+                import functools
+                from mcp.types import CallToolResult, TextContent
+                payload = await anyio.to_thread.run_sync(
+                    functools.partial(active_registry.get(name).handler, **arguments))
+                return CallToolResult(content=[TextContent(type="text", text=json.dumps(payload))],
+                    structured_content=payload, is_error=not payload["success"])
+            return await super().call_tool(name, arguments, context)
+
+    server = RegisteredServer(
         "GeoMCP",
         instructions=(
             "Use GeoMCP only for registered research tools. Paths and configuration are fixed server-side. "
@@ -28,8 +51,9 @@ def create_server(
         ),
     )
 
-    active_registry = registry or build_registry(config_dir=config_dir)
     for definition in active_registry.list():
+        if definition.name.startswith("picking."):
+            continue
         server.add_tool(
             definition.handler,
             name=definition.name,

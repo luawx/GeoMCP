@@ -17,6 +17,8 @@ def test_registry_contains_hardened_step_06_10_tools():
         "das.bandpass",
         "das.rms",
         "das.plot",
+        "picking.backends", "picking.presets", "picking.inspect", "picking.prepare",
+        "picking.validate", "picking.run", "picking.result", "picking.import",
     ]
     assert all("shell" not in name for name in names)
     assert all("delete" not in name for name in names)

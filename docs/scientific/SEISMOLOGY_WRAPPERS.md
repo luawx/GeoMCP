@@ -1,5 +1,7 @@
 # Step 14 — Catalog / HypoDD / NLLoc / MatchLocate
 
+> 完整的五模块需求见 [定位流程需求文档](LOCATION_WORKFLOW_REQUIREMENTS.md)。本文保留早期 Wrapper 规划，相关接口尚未实现。
+
 ## 目标
 
 将现有地震学程序以 Wrapper 方式接入 GeoMCP，不修改第三方软件内部源码。

@@ -1,0 +1,29 @@
+# Example only; deployment requires explicit administrator enablement and benchmarking.
+models: {}
+presets:
+  station-stalta-demo:
+    version: '1'
+    backend_id: stalta
+    model_id: null
+    execution_profile_id: stalta-cpu
+    parameters:
+      algorithm:
+        station_component: Z
+execution_profiles:
+  import-cpu:
+    enabled: false
+    executor: cpu
+    timeout: 3600
+    concurrency: 1
+  stalta-cpu:
+    enabled: false
+    executor: cpu
+    timeout: 3600
+    concurrency: 1
+limits:
+  max_input_bytes: 104857600
+  max_samples: 1000000
+  max_receivers: 1000
+  max_block_points: 1000000
+  max_picks: 100000
+  max_output_bytes: 104857600

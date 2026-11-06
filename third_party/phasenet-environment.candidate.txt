@@ -1,0 +1,9 @@
+# Candidate CPU environment, Python 3.11. Not a validated transitive lock.
+# TF2.15 retains compat.v1.layers; TF2.16+/Keras3 is incompatible upstream.
+tensorflow==2.15.1
+numpy==1.26.4
+scipy==1.11.4
+pandas==2.2.3
+h5py==3.11.0
+obspy==1.4.2
+tqdm==4.67.1

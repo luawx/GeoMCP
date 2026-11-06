@@ -17,6 +17,6 @@ jobs:
           python-version: "3.12"
           cache: pip
       - name: Install
-        run: python -m pip install -e ".[test,mcp,das]"
+        run: python -m pip install -e ".[test,mcp,das,picking]"
       - name: Test
         run: pytest -q
